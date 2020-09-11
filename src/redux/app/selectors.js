@@ -1,0 +1,1 @@
+export const getShowLoading = state => state.app.showLoading;
