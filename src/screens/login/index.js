@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Appbar, TextInput, Title, Button, Portal, Dialog, Paragraph, ActivityIndicator, Colors, Snackbar } from 'react-native-paper';
 import { View, Text } from 'react-native';
-import connections from '../../connections';
 import MyTheme from '../../assets/styles';
 import { StatusBar } from 'react-native';
+import ApiService from '../../services/api.service';
 
 export default class Login extends React.Component {
 
@@ -28,7 +28,7 @@ export default class Login extends React.Component {
         const { usuario } = this.state;
         const { contrasena } = this.state;
         this.setState({ dialogVisibility: true });
-        connections.get(connections.USER).then(
+        ApiService.instance.get(connections.USER).then(
             (request) => {
                 this.setState({ dialogVisibility: false });
             },

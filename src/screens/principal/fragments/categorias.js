@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { View } from "react-native";
 import { Appbar, List } from 'react-native-paper';
-import connections from '../../../connections';
 import MyTheme from '../../../assets/styles';
 import { StatusBar } from 'react-native';
+import ApiService from '../../../services/api.service';
 
 export default class Categorias extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ export default class Categorias extends Component {
     }
 
     _getCategorias = () => {
-        connections.get(connections.CATEGORIES).then(
+        ApiService.instance.get(ApiService.CATEGORIES).then(
             (response) => {
                 this.setState({ categorias: response.data });
             },

@@ -5,8 +5,9 @@ import { styles } from '..';
 import { ScrollView, StatusBar } from 'react-native';
 import ListadoProductosHorizontal from '../../../components/listado-productos-horizontal';
 import Slider from '../../../components/banner';
-import connections from '../../../connections';
 import MyTheme from '../../../assets/styles';
+import ApiService from '../../../services/api.service';
+import Axios from 'axios';
 
 
 class Inicio extends Component {
@@ -20,24 +21,21 @@ class Inicio extends Component {
     }
 
     _getProducts = () => {
-        connections.get(connections.PRODUCTS_MOST_SALED).then(
-            (response) => {
-                this.setState({ productosMasVendidos: response.data });
-            },
-            (error) => {
-            });
-        connections.get(connections.PRODUCTS_ON_SALE).then(
-            (response) => {
-                this.setState({ productosEnVenta: response.data });
-            },
-            (error) => {
-            });
+        Axios.all(
+            [
+                ApiService.instance.get(ApiService.PRODUCTS_MOST_SALED),
+                ApiService.instance.get(ApiService.PRODUCTS_ON_SALE)
+            ]
+        ).then(Axios.spread((...response) => {
+            this.setState({ productosMasVendidos: response[0].data });
+            this.setState({ productosEnVenta: response[1].data });
+        }));
     }
 
     render() {
         return (
             <Fragment>
-                <Appbar.Header style={[MyTheme.style.toolbar, {marginTop: StatusBar.currentHeight} ]}>
+                <Appbar.Header style={[MyTheme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
                     <Appbar.Action
                         icon="menu"
                         onPress={() => this.props.navigation.openDrawer()}
@@ -53,7 +51,7 @@ class Inicio extends Component {
                 <ScrollView>
                     <Slider />
                     <ListadoProductosHorizontal
-                    navigation={this.props.navigation}
+                        navigation={this.props.navigation}
                         title='Productos en oferta'
                         productos={this.state.productosEnVenta} />
                     <ListadoProductosHorizontal

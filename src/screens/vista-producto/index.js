@@ -2,14 +2,13 @@
 import React, { Component, Fragment } from 'react';
 import { Appbar, Divider, Title, Subheading, Button } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
-import Shimmer from '../../components/shimmer';
 import { Image, View, Text } from 'react-native';
 import MyTheme from '../../assets/styles';
 import Cantidad from '../../components/cantidad';
 import ListadoProductosHorizontal from '../../components/listado-productos-horizontal';
-import connections from '../../connections';
 import { StatusBar } from 'react-native';
 import ShimmerPlaceHolder from '../../components/shimmer-placeholder';
+import ApiService from '../../services/api.service';
 
 export default class VistaProducto extends Component {
 
@@ -24,7 +23,7 @@ export default class VistaProducto extends Component {
             imageShimmer: false,
             productosRelacionados: []
         }
-        this._getData(connections.buildUrlById(connections.PRODUCTS_RELATED, this.state.id));
+        this._getData(ApiService.instance.buildUrlById(ApiService.PRODUCTS_RELATED, this.state.id));
     }
 
     _onImageLoaded = () => {
@@ -32,7 +31,7 @@ export default class VistaProducto extends Component {
     }
 
     _getData = (url) => {
-        connections.get(url).then(
+        ApiService.instance.get(url).then(
             (response) => {
                 this.setState({ productosRelacionados: response.data });
             },

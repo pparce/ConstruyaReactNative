@@ -9,7 +9,7 @@ function AppStack() {
     return (
         <NavigationContainer>
             <Stack.Navigator
-                initialRouteName="principal"
+                initialRouteName="splash"
                 screenOptions={{
                     headerShown: false,
                     ...TransitionPresets.SlideFromRightIOS

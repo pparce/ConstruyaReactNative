@@ -2,15 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 import { View, StyleSheet, Animated, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Easing from 'react-native/Libraries/Animated/src/Easing';
 
 class CustomLinearGradient extends Component {
     render() {
         const { locationStart, colorShimmer, widthShimmer } = this.props;
         return (
             <LinearGradient
-                colors={colorShimmer}
+                colors={['#E0E0E0', '#F5F5F5', '#E0E0E0']}
                 style={{ flex: 1 }}
                 start={{ x: -1, y: 0.5 }}
+                angle={120}
+                useAngle
                 end={{ x: 2, y: 0.5 }}
                 locations={[locationStart + widthShimmer, locationStart + 0.5 + widthShimmer / 2, locationStart + 1]}
             />
@@ -54,8 +57,9 @@ class Shimmer extends Component {
         this.state.beginShimmerPosition.setValue(-1);
         return Animated.timing(this.state.beginShimmerPosition, {
             toValue: 1,
-            duration: this.props.duration,
+            duration: 3000,
             useNativeDriver: false,
+            easing: Easing.linear
         });
     }
     render() {
@@ -78,11 +82,11 @@ class Shimmer extends Component {
             >
                 {!visible
                     ? (
-                        <View style={{ flex: 1  }}>
+                        <View style={{ flex: 1 }}>
                             <Animated.LinearGradient
                                 locationStart={newValue}
                                 colorShimmer={colorShimmer}
-                                widthShimmer={widthShimmer}
+                                widthShimmer={0.1}
                             />
                             <View style={{ width: 0, height: 0 }}>
                                 {this.props.children}

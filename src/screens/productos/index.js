@@ -2,9 +2,9 @@
 import React, { Component, Fragment } from 'react';
 import { Appbar } from 'react-native-paper';
 import ListadoProductosVertical from '../../components/listado-productos-vertical';
-import connections from '../../connections';
 import MyTheme from '../../assets/styles';
 import { StatusBar } from 'react-native';
+import ApiService from '../../services/api.service';
 
 export default class Productos extends Component {
 
@@ -15,11 +15,11 @@ export default class Productos extends Component {
             title: this.props.route.params.title,
             productos: []
         }
-        this._getProductos(connections.buildUrlById(connections.PRODUCTS_BY_CATEGORIES, this.state.id));
+        this._getProductos(ApiService.instance.buildUrlById(ApiService.PRODUCTS_BY_CATEGORIES, this.state.id));
     }
 
     _getProductos = (url) => {
-        connections.get(url).then(
+        ApiService.instance.get(url).then(
             (response) => {
                 console.log(response.data.products[0]);
                 this.setState({ productos: response.data.products });
@@ -40,7 +40,7 @@ export default class Productos extends Component {
                 </Appbar.Header>
                 <ListadoProductosVertical
                     title='Productos en oferta'
-                    url={connections.buildUrlById(connections.PRODUCTS_BY_CATEGORIES, this.state.id)}
+                    url={ApiService.instance.buildUrlById(ApiService.PRODUCTS_BY_CATEGORIES, this.state.id)}
                     productos={this.state.productos} />
             </Fragment>
         );

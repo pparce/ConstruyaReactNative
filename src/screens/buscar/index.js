@@ -17,5 +17,4 @@ export default class Buscar extends React.Component {
             </Appbar.Header>
         );
     }
-
 }

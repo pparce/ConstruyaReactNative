@@ -4,12 +4,12 @@ import { Card, Divider, Button } from "react-native-paper";
 import MyTheme from "../assets/styles";
 import Shimmer from "./shimmer";
 import { useNavigation } from '@react-navigation/native';
-import connections from '../connections';
+import ApiService from '../services/api.service';
 
 
 function ItemList(props) {
     var item = props.item;
-    var urlImagen = connections.IMAGE_BASE_URL + item.product_image_main;
+    var urlImagen = ApiService.IMAGE_BASE_URL + item.product_image_main;
     var [showShimmer, setShowShimmer] = useState(false);
     var navigation = useNavigation();
     console.log();
@@ -21,7 +21,10 @@ function ItemList(props) {
                     navigation.push('vista_producto', { item: item, urlImagen: urlImagen });
                 }}>
                 <Card.Content style={{ paddingHorizontal: 0, paddingTop: 0 }}>
-                    <Shimmer style={{ width: '100%', height: 150 }} autoRun={!showShimmer} visible={showShimmer}>
+                    <Shimmer
+                        style={{ width: '100%', height: 150 }}
+                        autoRun={!showShimmer}
+                        visible={showShimmer}>
                         <Image
                             onLoad={() => {
                                 setShowShimmer(true);

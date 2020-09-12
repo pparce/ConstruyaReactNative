@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Text, Image, StyleSheet, View, StatusBar, ToolbarAndroid } from 'react-native';
 import { StackActions } from '@react-navigation/native';
+import ApiService, { baseUrl } from '../../services/api.service';
+import Axios from 'axios';
 
 
 export default class Splash extends Component {
@@ -10,15 +12,24 @@ export default class Splash extends Component {
         // this.props.navigation.navigate(routeName)
         this.props.navigation.dispatch(
             StackActions.replace('principal', {
-              user: 'jane',
+                user: 'jane',
             })
-          );
+        );
     }
 
     componentDidMount() {
-        setTimeout(() => {
+        ApiService.instance.get(ApiService.PRODUCTS_MOST_SALED).then(response => {
+            setTimeout(() => {
+                this.goToScreen('principal')
+            }, 1000);
+
+        }, error => {
+            ApiService.instance.changeBaseUrl();
             this.goToScreen('principal')
-        }, 2000);
+        })
+        /* setTimeout(() => {
+            this.goToScreen('principal')
+        }, 1000); */
     }
 
     render() {

@@ -1,7 +1,7 @@
 import { configureFonts } from "react-native-paper";
 import { StyleSheet, Dimensions, StatusBar } from "react-native";
 
-export default {
+const Theme = {
     dark: false,
     roundness: 4,
     colors: {
@@ -18,7 +18,7 @@ export default {
         backdrop: 'rgba(0,0,0,0.5)',
         notification: '#F44336',
         black: '#000000',
-        white: '#ffffff',
+        white: '#ffffff'
     },
     fonts: configureFonts(),
     animation: {
@@ -47,7 +47,7 @@ export default {
         horizontalCard: {
             marginHorizontal: 8,
             marginVertical: 16,
-            width: 170,
+            width: 170
         },
         verticalCard: {
             marginHorizontal: 8,
@@ -62,3 +62,5 @@ export default {
         }
     })
 };
+
+export default Theme;
