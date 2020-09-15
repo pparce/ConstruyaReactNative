@@ -3,6 +3,7 @@ import { Text, Image, StyleSheet, View, StatusBar, ToolbarAndroid } from 'react-
 import { StackActions } from '@react-navigation/native';
 import ApiService, { baseUrl } from '../../services/api.service';
 import Axios from 'axios';
+import CarroService from '../../services/carro.service';
 
 
 export default class Splash extends Component {
@@ -18,6 +19,7 @@ export default class Splash extends Component {
     }
 
     componentDidMount() {
+        //Esta configuracion es solo para la version de desarrollo
         ApiService.instance.get(ApiService.PRODUCTS_MOST_SALED).then(response => {
             setTimeout(() => {
                 this.goToScreen('principal')

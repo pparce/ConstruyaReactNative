@@ -11,6 +11,7 @@ const Theme = {
         surface: '#ffffff',
         error: '#B00020',
         text: '#000000',
+        subtitle: '#757575',
         onBackground: '#ffffff',
         onSurface: '#212121',
         disabled: '#BDBDBD',
@@ -18,7 +19,8 @@ const Theme = {
         backdrop: 'rgba(0,0,0,0.5)',
         notification: '#F44336',
         black: '#000000',
-        white: '#ffffff'
+        white: '#ffffff',
+        ripple: '#BDBDBD'
     },
     fonts: configureFonts(),
     animation: {

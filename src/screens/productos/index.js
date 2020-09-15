@@ -5,26 +5,40 @@ import ListadoProductosVertical from '../../components/listado-productos-vertica
 import MyTheme from '../../assets/styles';
 import { StatusBar } from 'react-native';
 import ApiService from '../../services/api.service';
+import { connect } from 'react-redux';
+import { hideLoading, showErrorConnectionDialog, showLoading } from '../../redux/app/actions';
+import ErrorConnectionDialog from '../../components/error-connection-dialog';
+import LoadingDialog from '../../components/loading-dialog';
+import ConnectionsDialogs from '../../components/connections-dialogs';
 
-export default class Productos extends Component {
+class Productos extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             id: this.props.route.params.id,
             title: this.props.route.params.title,
-            productos: []
+            productos: [],
+            onError: false,
+            onLoading: false,
+            url: ApiService.instance.buildUrlById(ApiService.PRODUCTS_BY_CATEGORIES, this.props.route.params.id),
         }
-        this._getProductos(ApiService.instance.buildUrlById(ApiService.PRODUCTS_BY_CATEGORIES, this.state.id));
     }
 
-    _getProductos = (url) => {
-        ApiService.instance.get(url).then(
+    componentDidMount() {
+        this._getProductos();
+    }
+
+    _getProductos = () => {
+        this.setState({onLoading: true});
+        ApiService.instance.get(this.state.url).then(
             (response) => {
-                console.log(response.data.products[0]);
-                this.setState({ productos: response.data.products });
+                this.setState({ productos: response.products, onLoading: false });
+                // this.state.hideLoading();
             },
             (error) => {
+                // this.state.hideLoading();
+                this.setState({ onLoading: false, onError: true });
             });
     }
 
@@ -42,8 +56,27 @@ export default class Productos extends Component {
                     title='Productos en oferta'
                     url={ApiService.instance.buildUrlById(ApiService.PRODUCTS_BY_CATEGORIES, this.state.id)}
                     productos={this.state.productos} />
+                <ConnectionsDialogs
+                    onLoading={this.state.onLoading}
+                    onError={this.state.onError}
+                    onCancel={() => {
+                        this.setState({ onError: false })
+                        this.props.navigation.goBack()
+                    }}
+                    onRetry={() => {
+                        this.setState({ onError: false });
+                        this._getProductos();
+                    }} />
             </Fragment>
         );
     }
-
 }
+
+const mapStateToProps = null;
+const mapDispatchToProps = {
+    showLoading: showLoading,
+    hideLoading: hideLoading,
+    showErrorConnectionDialog: showErrorConnectionDialog
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Productos);

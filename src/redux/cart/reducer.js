@@ -2,22 +2,18 @@ import * as types from './types';
 import { INITIAL_STATE } from './initialState';
 
 const reducer = (state = INITIAL_STATE, action) => {
-    const { type } = action;
+    const { type, payload } = action;
     switch (type) {
-        case types.SHOW_LOADING:
+        case types.GET_CART:
             return {
                 ...state,
-                showLoading: true,
+                cart: payload.data,
             };
-        case types.HIDE_LOADING:
+        case types.SET_CART:
             return {
                 ...state,
-                showLoading: false,
-            };
-        case types.SHOW_ERROR_CONNECTION:
-            return {
-                ...state,
-                showErrorConnectionDialog: true,
+                cart: payload,
+                showCart: payload.items.length > 0 ? true : false,
             };
         default:
             return state;

@@ -16,6 +16,8 @@ target 'ConstruyaReact' do
 
   pod 'react-native-viewpager', :path => '../node_modules/@react-native-community/viewpager'
 
+  pod 'RNSharedElement', :path => '../node_modules/react-native-shared-element'
+
   target 'ConstruyaReactTests' do
     inherit! :complete
     # Pods for testing

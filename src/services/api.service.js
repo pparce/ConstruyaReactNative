@@ -1,4 +1,7 @@
-import Axios from "axios";
+import Axios from 'axios';
+import { Service } from 'axios-middleware';
+import { connect } from 'react-redux';
+import { showLoading, hideLoading } from '../redux/app/actions';
 
 
 let instance = null;
@@ -16,10 +19,10 @@ const header = {
 
 class ApiService {
     static USER = baseUrl + 'posts';
+    static IMAGE_BASE_URL = 'http://api.storebow.scoutframe.com/media/';
     static PRODUCTS_MOST_SALED = 'products/public/?_l=7&_t=MOST_SALED';
     static PRODUCTS_ON_SALE = 'products/public/?_l=7&_t=ON_SALE';
     static PRODUCTS_RELATED = "products/{id}/related/";
-    static IMAGE_BASE_URL = 'http://api.storebow.scoutframe.com/media/';
     static CATEGORIES = 'product/categories/public-all/';
     static PRODUCTS_BY_CATEGORIES = 'product/categories/{id}/public/';
 
@@ -31,6 +34,8 @@ class ApiService {
             timeout: 1000,
             headers: header
         });
+        const service = new Service(this.request);
+         service.register(new Middleware());
     }
 
     static get instance() {
@@ -40,9 +45,9 @@ class ApiService {
         return instance;
     }
 
+
     async get(url) {
         url = this.baseUrl + url;
-        console.log(url);
         return this.request.get(url);
     }
 
@@ -69,6 +74,23 @@ class ApiService {
 
     buildUrlById(url = '', id) {
         return url.replace('{id}', id);
+    }
+}
+
+class Middleware {
+    constructor() {
+        if (typeof Middleware.instance === 'object') return Middleware.instance;
+        Middleware.instance = this;
+    }
+    onResponse(response) {
+        response = JSON.parse(response.data);
+        return response;
+    }
+
+    onRequest(config) {
+        
+        
+        return config;
     }
 }
 

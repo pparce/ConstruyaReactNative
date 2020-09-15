@@ -33,7 +33,7 @@ export default class VistaProducto extends Component {
     _getData = (url) => {
         ApiService.instance.get(url).then(
             (response) => {
-                this.setState({ productosRelacionados: response.data });
+                this.setState({ productosRelacionados: response });
             },
             (error) => {
             });
@@ -42,7 +42,6 @@ export default class VistaProducto extends Component {
     render() {
         var item = this.state.item;
         var imageShimmer = this.state.imageShimmer;
-        console.log(this.state.imagen);
         var onLoadData = this.state.onLoadData;
         return (
             <Fragment>

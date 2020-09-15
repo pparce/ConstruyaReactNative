@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
+import { Text } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
+import ItemProductCart from './item-product-cart';
 import ItemList from './itemList';
 
-class ListadoProductosVertical extends Component {
+class ListadoProductosCarrito extends Component {
 
     constructor(props) {
         super(props);
@@ -22,17 +24,15 @@ class ListadoProductosVertical extends Component {
 
     _renderItem = ({ item }) => {
         return (
-            <ItemList item={item} onPressItem={this._onPressItem} />
+            <ItemProductCart item={item} onPressItem={this._onPressItem} />
         );
     }
 
     render() {
         return (
-            <Fragment>
+            <Fragment> 
                 <FlatList
-                    style={{ marginHorizontal: 8 }}
-                    numColumns={2}
-                    data={this.props.items}
+                    data={this.props.productos}
                     renderItem={this._renderItem}
                     keyExtractor={this._renderMyKeyExtractor}
                 />
@@ -44,4 +44,4 @@ class ListadoProductosVertical extends Component {
 
 
 
-export default ListadoProductosVertical;
+export default ListadoProductosCarrito;

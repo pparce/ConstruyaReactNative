@@ -1,2 +1,4 @@
 export const SHOW_LOADING = 'app/SHOW_LOADING';
 export const HIDE_LOADING = 'app/HIDE_LOADING';
+export const SHOW_ERROR_CONNECTION = 'app/SHOW_ERROR_CONNECTION';
+export const HIDE_ERROR_CONNECTION = 'app/HIDE_ERROR_CONNECTION';

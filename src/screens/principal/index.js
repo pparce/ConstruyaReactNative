@@ -7,6 +7,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerHeader from '../../components/drawer-header'
 import MyTheme from '../../assets/styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CarroService from '../../services/carro.service';
 
 export default class Principal extends Component {
 
@@ -52,7 +53,6 @@ export default class Principal extends Component {
 
     onDismmisSnackBar() {
         this.setState({ snackBarVisibility: false });
-        console.log('dismiss');
     }
 
     render() {

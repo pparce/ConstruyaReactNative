@@ -12,7 +12,6 @@ function ItemList(props) {
     var urlImagen = ApiService.IMAGE_BASE_URL + item.product_image_main;
     var [showShimmer, setShowShimmer] = useState(false);
     var navigation = useNavigation();
-    console.log();
     return (
         <View>
             <Card
@@ -75,8 +74,8 @@ function ItemList(props) {
                         onPress={() => {
                             props.onPressItem(props.item)
                         }}
-                        icon="cart"
-                        mode="contained"
+                        icon='cart'
+                        mode='contained'
                         uppercase>Agregar</Button>
                 </Card.Actions>
             </Card>

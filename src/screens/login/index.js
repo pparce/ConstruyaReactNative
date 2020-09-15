@@ -30,13 +30,13 @@ export default class Login extends React.Component {
         this.setState({ dialogVisibility: true });
         ApiService.instance.get(connections.USER).then(
             (request) => {
-                this.setState({ dialogVisibility: false });
+                // this.setState({ dialogVisibility: false });
             },
             (error) => {
-                this.setState({
-                    dialogVisibility: false,
-                    snackBarVisibility: true
-                });
+                // this.setState({
+                //     dialogVisibility: false,
+                //     snackBarVisibility: true
+                // });
             });
     }
 
@@ -50,7 +50,6 @@ export default class Login extends React.Component {
 
     onDismmisSnackBar() {
         this.setState({ snackBarVisibility: false });
-        console.log('dismiss');
     }
 
     render() {

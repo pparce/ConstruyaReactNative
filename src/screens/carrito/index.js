@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import { View, Text, StatusBar, StyleSheet } from 'react-native';
-import ViewPagerAndroid from '@react-native-community/viewpager';
+import ViewPager from '@react-native-community/viewpager';
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps';
 import { Appbar } from 'react-native-paper';
 import MyTheme from "../../assets/styles";
 import StepperIndicator from '../../components/stepper-indicator';
 import StepperNavigation from '../../components/stepper-navigation';
+import CarroService from '../../services/carro.service';
+import ProductosStep from './steps/productos-step';
+import EnvioStep from './steps/envio-step';
+import PagoStep from './steps/pago-step';
 
 class Carrito extends Component {
     constructor(props) {
@@ -25,12 +29,19 @@ class Carrito extends Component {
                         onPress={() => this.props.navigation.goBack()}
                     />
                     <Appbar.Content title='Carro de Compras' />
+                    <Appbar.Action
+                        icon="delete-sweep"
+                        onPress={() => {
+                            CarroService.instance.clearCart();
+                            this.props.navigation.goBack();
+                        }}
+                    />
                 </Appbar.Header>
 
                 <StepperIndicator
                     steppSelected={this.state.currentPage}
                     titulos={this.state.steppers} />
-                <ViewPagerAndroid
+                <ViewPager
                     ref={(viewpager) => {
                         this.viewPager = viewpager;
                     }}
@@ -38,19 +49,13 @@ class Carrito extends Component {
                         var position = e.nativeEvent.position;
                         // this.setState({ currentPage: position });
                     }}
-                    scrollEnabled={true}
+                    scrollEnabled={false}
                     style={styles.viewPager}
-                    initialPage={this.state.currentPage}>
-                    <View style={styles.pageStyle} key="1f">
-                        <Text>First page</Text>
-                    </View>
-                    <View style={styles.pageStyle} key="2f">
-                        <Text>Second page</Text>
-                    </View>
-                    <View style={styles.pageStyle} key="3">
-                        <Text>Second page</Text>
-                    </View>
-                </ViewPagerAndroid>
+                    initialPage={0}>
+                    <ProductosStep key='1' />
+                    <EnvioStep key='2' />
+                    <PagoStep key='3' />
+                </ViewPager>
                 <StepperNavigation
                     steppers={this.state.steppers}
                     currentPage={this.state.currentPage}
@@ -62,13 +67,13 @@ class Carrito extends Component {
     };
 
     nextStep = () => {
-        this.setState({currentPage: this.state.currentPage + 1})
+        this.setState({ currentPage: this.state.currentPage + 1 })
         this.viewPager.setPage(this.state.currentPage + 1)
     }
 
     lastStep = () => {
         this.viewPager.setPage(this.state.currentPage - 1)
-        this.setState({currentPage: this.state.currentPage - 1})
+        this.setState({ currentPage: this.state.currentPage - 1 })
     }
 
     endStep = () => {
@@ -81,7 +86,6 @@ var styles = StyleSheet.create({
         flex: 1
     },
     pageStyle: {
-
         alignItems: 'center',
         padding: 20,
     }

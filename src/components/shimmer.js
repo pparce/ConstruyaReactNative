@@ -9,7 +9,7 @@ class CustomLinearGradient extends Component {
         const { locationStart, colorShimmer, widthShimmer } = this.props;
         return (
             <LinearGradient
-                colors={['#E0E0E0', '#F5F5F5', '#E0E0E0']}
+                colors={['#E0E0E0', '#ffffff', '#E0E0E0']}
                 style={{ flex: 1 }}
                 start={{ x: -1, y: 0.5 }}
                 angle={120}
@@ -57,15 +57,15 @@ class Shimmer extends Component {
         this.state.beginShimmerPosition.setValue(-1);
         return Animated.timing(this.state.beginShimmerPosition, {
             toValue: 1,
-            duration: 3000,
+            duration: 2000,
             useNativeDriver: false,
             easing: Easing.linear
         });
     }
     render() {
         const { width, reverse, height, colorShimmer, style, widthShimmer, children, visible, backgroundColorBehindBorder, hasBorder } = this.props;
-        let beginPostioner = -0.7;
-        let endPosition = 0.7;
+        let beginPostioner = -1;
+        let endPosition = 1;
         if (reverse) {
             beginPostioner = 0.7;
             endPosition = -0.7;

@@ -2,13 +2,13 @@ import React, { Fragment } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import MyTheme from '../assets/styles';
 import { Appbar } from 'react-native-paper';
+import { ThemeProvider } from '@react-navigation/native';
 
 function StepperIndicator({ steppSelected = 0, titulos = ['Productos', 'Envío', 'Pago'] }) {
     return (
         <Appbar.Header style={{
-            paddingBottom: 16,
             backgroundColor: '#ffffff',
-            height: 50
+            height: 72
         }}>
             <View style={style.container}>
                 {
@@ -32,7 +32,11 @@ const buldSteps = (steppSelected, titulos) => {
                     }]} >
                         <Text style={style.numero}>{index + 1}</Text>
                     </View>
-                    <Text style={style.label}>{titulos[index]}</Text>
+                    <Text
+                        style={[
+                            index <= steppSelected ? style.labelSelected : style.label
+                            , steppSelected == index && { fontWeight: 'bold' }
+                        ]}>{titulos[index]}</Text> 
                 </View>
                 {
                     index < titulos.length - 1 && <View style={style.linea}></View>
@@ -54,8 +58,8 @@ const style = StyleSheet.create({
     },
     indicador: {
         flexDirection: 'column',
-        height: 28,
-        width: 28,
+        height: 24,
+        width: 24,
         margin: 8,
         borderRadius: 50,
         backgroundColor: MyTheme.colors.disabled,
@@ -63,8 +67,8 @@ const style = StyleSheet.create({
     },
     indicadordisabled: {
         flexDirection: 'column',
-        height: 28,
-        width: 28,
+        height: 24,
+        width: 24,
         margin: 8,
         borderRadius: 50,
         backgroundColor: MyTheme.colors.disabled,
@@ -75,12 +79,19 @@ const style = StyleSheet.create({
         color: MyTheme.colors.white
     },
     label: {
+        color: MyTheme.colors.disabled,
         fontSize: 14,
         display: 'flex'
     },
+    labelSelected: {
+        fontSize: 14,
+        display: 'flex',
+        color: MyTheme.colors.black,
+
+    },
     linea: {
         alignSelf: 'center',
-        flex: 0.3,
+        flex: 0.5,
         height: 1,
         marginLeft: 8,
         backgroundColor: MyTheme.colors.disabled

@@ -4,12 +4,18 @@ import { Appbar, List } from 'react-native-paper';
 import MyTheme from '../../../assets/styles';
 import { StatusBar } from 'react-native';
 import ApiService from '../../../services/api.service';
+import { connect } from 'react-redux';
+import { hideLoading, showLoading } from '../../../redux/app/actions';
+import { ScrollView } from 'react-native-gesture-handler';
+import ConnectionsDialogs from '../../../components/connections-dialogs';
 
-export default class Categorias extends Component {
+class Categorias extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            categorias: []
+            categorias: [],
+            onLoading: false,
+            onError: false,
         };
         this.passData = this.passData.bind(this);
     }
@@ -23,12 +29,13 @@ export default class Categorias extends Component {
     }
 
     _getCategorias = () => {
+        this.setState({onLoading: true});
         ApiService.instance.get(ApiService.CATEGORIES).then(
             (response) => {
-                this.setState({ categorias: response.data });
+                this.setState({ categorias: response, onLoading: false });
             },
             (error) => {
-                // alert('error en peticionn');
+                this.setState({onLoading: false, onError: true});
             }
         );
     }
@@ -109,10 +116,30 @@ export default class Categorias extends Component {
                         onPress={() => navigation.navigate('buscar')}
                     />
                 </Appbar.Header>
-                <List.AccordionGroup>
-                    {viewListado}
-                </List.AccordionGroup>
+                <ScrollView>
+                    <List.AccordionGroup>
+                        {viewListado}
+                    </List.AccordionGroup>
+                </ScrollView>
+                <ConnectionsDialogs
+                    onLoading={this.state.onLoading}
+                    onError={this.state.onError}
+                    onCancel={() => {
+                        this.setState({ onError: false })
+                        this.props.navigation.goBack()
+                    }}
+                    onRetry={() => {
+                        this.setState({ onError: false });
+                        this._getCategorias();
+                    }} />
             </View>
         );
     }
 }
+const mapStateToProps = null;
+const mapDispatchToProps = {
+    showLoading: showLoading,
+    hideLoading: hideLoading,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Categorias);

@@ -4,6 +4,7 @@ import ItemList from './itemList';
 import { Title } from 'react-native-paper';
 import { showLoading, hideLoading } from '../redux/app/actions';
 import { connect } from 'react-redux';
+import CarroService from '../services/carro.service';
 
 class ListadoProductosHorizontal extends Component {
 
@@ -21,13 +22,7 @@ class ListadoProductosHorizontal extends Component {
     _keyExtractor = (item, index) => item.id;
 
     _onPressItem = (item) => {
-        // alert(item.name);
-        // this.state.showLoading();
-        this.props.navigation.navigate('carrito')
-        
-        setTimeout(() => {
-            // this.state.hideLoading();
-        }, 1);
+        CarroService.instance.addItemToCart(item, 1);
     };
 
     _renderMyKeyExtractor = (item, index) => item.id.toString();
@@ -39,7 +34,6 @@ class ListadoProductosHorizontal extends Component {
     }
 
     render() {
-        
         return (
             <Fragment>
                 <Title
