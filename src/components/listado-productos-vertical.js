@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
+import CarroService from '../services/carro.service';
 import ItemList from './itemList';
 
 class ListadoProductosVertical extends Component {
@@ -8,14 +9,14 @@ class ListadoProductosVertical extends Component {
         super(props);
         this.state = {
             title: this.props.title,
-            items: this.props.items
+            productos: this.props.productos
         };
     }
 
     _keyExtractor = (item, index) => item.id;
 
     _onPressItem = (item) => {
-        alert(item.name);
+        CarroService.instance.addItemToCart(item, 1);
     };
 
     _renderMyKeyExtractor = (item, index) => item.id.toString();
@@ -32,7 +33,7 @@ class ListadoProductosVertical extends Component {
                 <FlatList
                     style={{ marginHorizontal: 8 }}
                     numColumns={2}
-                    data={this.props.items}
+                    data={this.props.productos}
                     renderItem={this._renderItem}
                     keyExtractor={this._renderMyKeyExtractor}
                 />

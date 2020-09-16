@@ -5,6 +5,8 @@ import { Title } from 'react-native-paper';
 import { showLoading, hideLoading } from '../redux/app/actions';
 import { connect } from 'react-redux';
 import CarroService from '../services/carro.service';
+import ApiService from '../services/api.service';
+import ReduxService from '../services/redux.service';
 
 class ListadoProductosHorizontal extends Component {
 
@@ -15,14 +17,30 @@ class ListadoProductosHorizontal extends Component {
             productos: this.props.productos ? this.props.productos : [],
             showLoading: this.props.loginOn,
             hideLoading: this.props.loginOff,
-            
+
         };
     }
 
     _keyExtractor = (item, index) => item.id;
 
     _onPressItem = (item) => {
-        CarroService.instance.addItemToCart(item, 1);
+        ReduxService.instance.getRedux().showLoading();
+        const url = ApiService.instance.buildUrlById(
+            ApiService.PRODUCTS_BY_ID,
+            item.id)
+        ApiService.instance.get(url).then(
+            response => {
+                CarroService.instance.addItemToCart(response, 1);
+                ReduxService.instance.getRedux().hideLoading();
+            }, error => {
+                console.log('error');
+                ReduxService.instance.getRedux().hideLoading();
+                ReduxService.instance.getRedux().showErrorConnectionDialog({
+                    action: this._onPressItem,
+                    params: item
+                });
+            }
+        );
     };
 
     _renderMyKeyExtractor = (item, index) => item.id.toString();

@@ -23,6 +23,7 @@ class ApiService {
     static PRODUCTS_MOST_SALED = 'products/public/?_l=7&_t=MOST_SALED';
     static PRODUCTS_ON_SALE = 'products/public/?_l=7&_t=ON_SALE';
     static PRODUCTS_RELATED = "products/{id}/related/";
+    static PRODUCTS_BY_ID = "products/{id}/public/";;
     static CATEGORIES = 'product/categories/public-all/';
     static PRODUCTS_BY_CATEGORIES = 'product/categories/{id}/public/';
 
@@ -34,8 +35,9 @@ class ApiService {
             timeout: 1000,
             headers: header
         });
+
         const service = new Service(this.request);
-         service.register(new Middleware());
+        service.register(new Middleware());
     }
 
     static get instance() {
@@ -48,6 +50,7 @@ class ApiService {
 
     async get(url) {
         url = this.baseUrl + url;
+        console.log(url);
         return this.request.get(url);
     }
 
@@ -79,6 +82,7 @@ class ApiService {
 
 class Middleware {
     constructor() {
+        this.peticiones = [];
         if (typeof Middleware.instance === 'object') return Middleware.instance;
         Middleware.instance = this;
     }
@@ -88,9 +92,11 @@ class Middleware {
     }
 
     onRequest(config) {
-        
-        
         return config;
+    }
+
+    onSync(promise) {
+        return promise;
     }
 }
 

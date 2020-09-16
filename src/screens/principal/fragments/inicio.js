@@ -7,12 +7,9 @@ import Slider from '../../../components/banner';
 import MyTheme from '../../../assets/styles';
 import ApiService from '../../../services/api.service';
 import Axios from 'axios';
-import { hideLoading, showLoading } from '../../../redux/app/actions';
 import { connect } from 'react-redux';
 import ConnectionsDialogs from '../../../components/connections-dialogs';
-import CarroService from '../../../services/carro.service';
-import { setCart } from '../../../redux/cart/actions';
-import { getCart } from '../../../redux/cart/selectors';
+
 
 
 class Inicio extends Component {

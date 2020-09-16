@@ -30,12 +30,12 @@ export default StepperNavigation;
 
 const style = StyleSheet.create({
     container: {
+        borderTopWidth: 0.3,
         alignSelf: 'stretch',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderColor: theme.colors.primary,
-        elevation: 1
+        borderColor: theme.colors.black,
     },
     button: {
         margin: 8,

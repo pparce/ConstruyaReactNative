@@ -5,10 +5,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Image, View, Text } from 'react-native';
 import MyTheme from '../../assets/styles';
 import Cantidad from '../../components/cantidad';
-import ListadoProductosHorizontal from '../../components/listado-productos-horizontal';
 import { StatusBar } from 'react-native';
 import ShimmerPlaceHolder from '../../components/shimmer-placeholder';
 import ApiService from '../../services/api.service';
+import ListadoProductosHorizontal from '../../components/listado-productos-horizontal';
 
 export default class VistaProducto extends Component {
 
@@ -33,6 +33,7 @@ export default class VistaProducto extends Component {
     _getData = (url) => {
         ApiService.instance.get(url).then(
             (response) => {
+                
                 this.setState({ productosRelacionados: response });
             },
             (error) => {

@@ -34,7 +34,6 @@ class Productos extends Component {
         ApiService.instance.get(this.state.url).then(
             (response) => {
                 this.setState({ productos: response.products, onLoading: false });
-                // this.state.hideLoading();
             },
             (error) => {
                 // this.state.hideLoading();

@@ -1,5 +1,6 @@
 import AppView from "../App-View";
 import { store } from "../redux/store";
+import ReduxService from "./redux.service";
 
 
 let instance = null;
@@ -14,28 +15,17 @@ export class CarroService {
             total: 0,
             subtotal: 0,
         }
+        if (ReduxService.instance.getRedux().cart.cart.items) {
+            this.cart = ReduxService.instance.getRedux().cart.cart;
+        } else {
+            this.inicializarCart();
+        }
     }
     static get instance() {
         if (instance === null) {
             instance = new CarroService();
         }
         return instance;
-    }
-
-    setActionRedux(actionRedux) {
-        this.actionRedux = actionRedux;
-        if (actionRedux.cart.cart.items) {
-            this.cart = actionRedux.cart.cart;
-            console.log(this.cart);
-        } else {
-            this.inicializarCart()
-        }
-
-    }
-
-    getActionRedux() {
-        this.actionRedux.setCarroCompras(this.cart);
-        return this.actionRedux;
     }
 
     inicializarCart() {
@@ -55,12 +45,18 @@ export class CarroService {
         this.saveCart();
     }
 
+    setItems(items) {
+        this.cart.items = items;
+        this.calcularTotal();
+    }
+
     addItemToCart(producto, cantidad, opciones = null) {
         if (this.isAdded(producto.id)) {
             this.buildItemAdded(producto, cantidad);
         } else {
             this.cart.items.push(this.buildItem(producto, cantidad, opciones));
         }
+        ReduxService.instance.getRedux().showSnackBar();
         this.calcularSubtotal();
     }
 
@@ -117,7 +113,7 @@ export class CarroService {
     }
 
     saveCart() {
-        this.actionRedux.setCart(this.cart);
+        ReduxService.instance.getRedux().setCart(this.cart);
     }
 }
 

@@ -30,11 +30,15 @@ class ListadoProductosCarrito extends Component {
 
     render() {
         return (
-            <Fragment> 
+            <Fragment>
                 <FlatList
+                style={{}}
                     data={this.props.productos}
                     renderItem={this._renderItem}
                     keyExtractor={this._renderMyKeyExtractor}
+                    ListFooterComponentStyle={{}}
+                    ListFooterComponent={this.props.footer}
+                    ListHeaderComponent={this.props.header}
                 />
             </Fragment>
 

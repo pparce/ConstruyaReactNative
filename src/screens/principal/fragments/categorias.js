@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { View } from "react-native";
-import { Appbar, List } from 'react-native-paper';
+import { Appbar, Button, List } from 'react-native-paper';
 import MyTheme from '../../../assets/styles';
 import { StatusBar } from 'react-native';
 import ApiService from '../../../services/api.service';
 import { connect } from 'react-redux';
-import { hideLoading, showLoading } from '../../../redux/app/actions';
 import { ScrollView } from 'react-native-gesture-handler';
 import ConnectionsDialogs from '../../../components/connections-dialogs';
 
@@ -29,13 +28,13 @@ class Categorias extends Component {
     }
 
     _getCategorias = () => {
-        this.setState({onLoading: true});
+        this.setState({ onLoading: true });
         ApiService.instance.get(ApiService.CATEGORIES).then(
             (response) => {
                 this.setState({ categorias: response, onLoading: false });
             },
             (error) => {
-                this.setState({onLoading: false, onError: true});
+                this.setState({ onLoading: false, onError: true });
             }
         );
     }
@@ -102,6 +101,7 @@ class Categorias extends Component {
 
     render() {
         var viewListado = this._createViews();
+        var cart = this.props.cart.cart;
         return (
             <View style={{ flex: 1 }}>
                 <Appbar.Header style={[MyTheme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
@@ -115,6 +115,21 @@ class Categorias extends Component {
                         icon="magnify"
                         onPress={() => navigation.navigate('buscar')}
                     />
+                    {
+                        this.props.cart.showCart &&
+                        <Button
+                            style={{
+                                marginRight: 8,
+                                display: 'flex'
+                            }}
+                            onPress={() => {
+                                this.props.navigation.navigate('carrito');
+                            }}
+                            icon='cart'
+                            mode='contained'>
+                            ${cart.subtotal}
+                        </Button>
+                    }
                 </Appbar.Header>
                 <ScrollView>
                     <List.AccordionGroup>
@@ -136,10 +151,12 @@ class Categorias extends Component {
         );
     }
 }
-const mapStateToProps = null;
+const mapStateToProps = state => ({
+    cart: state.cart
+});
+
 const mapDispatchToProps = {
-    showLoading: showLoading,
-    hideLoading: hideLoading,
+    // setCart: setCart
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Categorias);

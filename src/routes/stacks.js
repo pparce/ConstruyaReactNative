@@ -2,12 +2,13 @@ import React from 'react';
 import { createStackNavigator, TransitionPresets, CardStyleInterpolators } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Route from './routes'
+import { navigationRef } from '../utiles/navigation/root-navigation';
 
 const Stack = createStackNavigator();
 
 function AppStack() {
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
             <Stack.Navigator
                 initialRouteName="splash"
                 screenOptions={{

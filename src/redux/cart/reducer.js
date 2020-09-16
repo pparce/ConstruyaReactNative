@@ -15,6 +15,16 @@ const reducer = (state = INITIAL_STATE, action) => {
                 cart: payload,
                 showCart: payload.items.length > 0 ? true : false,
             };
+        case types.SHOW_SNACKBAR:
+            return {
+                ...state,
+                showSnackBar: payload,
+            };
+        case types.HIDE_SNACKBAR:
+            return {
+                ...state,
+                showSnackBar: payload,
+            };
         default:
             return state;
     }

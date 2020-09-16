@@ -6,9 +6,7 @@ function ErrorConnectionDialog({ visible, onCancel, onRetry }) {
         <Portal>
             <Dialog
                 visible={visible}
-                onDismiss={() => {
-                    this.props.loadingOff();
-                }}>
+                dismissable={false}>
                 <Dialog.Content style={{ flexDirection: 'row' }}>
                     <Paragraph>Error de conexión. Revise su conexión a internet.</Paragraph>
                 </Dialog.Content>
