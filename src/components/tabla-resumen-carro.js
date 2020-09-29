@@ -8,7 +8,7 @@ function TablaResumenCarro({ cart }) {
             <ItemInfo label='TOTAL PARCIAL' value={cart.subtotal} />
             <ItemInfo label='DESCUENTO' value={cart.subtotal} />
             <ItemInfo label='IMPUESTO' value={cart.subtotal} />
-            <ItemInfo label='TOTAL' value={cart.subtotal} estilo={{ backgroundColor: Theme.colors.disabled }} />
+            <ItemInfo label='TOTAL' value={cart.subtotal} estilo={{ backgroundColor: Theme.colors.grisClaro }} />
         </View>
     );
 }
@@ -26,9 +26,8 @@ const style = StyleSheet.create({
     container: {
         width: '50%',
         alignSelf: 'flex-end',
-        margin: 16,
         borderWidth: 0.5,
-
+        marginTop: 16,
         borderColor: Theme.colors.black,
     },
     item: {
@@ -37,8 +36,7 @@ const style = StyleSheet.create({
         justifyContent: 'space-between',
     },
     label: {
-        color: Theme.colors.black,
-        fontSize: 16
+        color: Theme.colors.subtitle,
     }
 });
 

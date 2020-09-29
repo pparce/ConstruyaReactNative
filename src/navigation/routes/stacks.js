@@ -1,8 +1,8 @@
 import React from 'react';
-import { createStackNavigator, TransitionPresets, CardStyleInterpolators } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Route from './routes'
-import { navigationRef } from '../utiles/navigation/root-navigation';
+import { navigationRef } from '../root-navigation';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +21,9 @@ function AppStack() {
                 <Stack.Screen
                     name="principal"
                     component={Route.Principal}
+                    options={{
+                        drawerLockMode: 'locked-closed'
+                    }}
                 />
                 <Stack.Screen
                     name="usuario"
@@ -29,6 +32,22 @@ function AppStack() {
                 <Stack.Screen
                     name="login"
                     component={Route.Login}
+                />
+                <Stack.Screen
+                    name="edit-information"
+                    component={Route.EditInfo}
+                />
+                <Stack.Screen
+                    name="edit-informacion-acceso"
+                    component={Route.EditInformacionAcceso}
+                />
+                <Stack.Screen
+                    name="lista-pedidos"
+                    component={Route.ListaPedidos}
+                />
+                <Stack.Screen
+                    name="vista-pedido"
+                    component={Route.VistaPedido}
                 />
                 <Stack.Screen
                     name="registro"
@@ -49,6 +68,10 @@ function AppStack() {
                 <Stack.Screen
                     name="carrito"
                     component={Route.Carrito}
+                />
+                <Stack.Screen
+                    name="favoritos"
+                    component={Route.Favoritos}
                 />
             </Stack.Navigator>
         </NavigationContainer>

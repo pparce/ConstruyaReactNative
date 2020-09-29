@@ -9,7 +9,7 @@ import Theme from '../assets/styles/theme';
 
 function ItemProductCart(props) {
     var item = props.item;
-    var urlImagen = ApiService.IMAGE_BASE_URL + item.producto.product_image_main;
+    var urlImagen = ApiService.IMAGE_BASE_URL + item.product.product_image_main;
     var [showShimmer, setShowShimmer] = useState(false);
     var navigation = useNavigation();
     return (
@@ -45,13 +45,13 @@ function ItemProductCart(props) {
                             <Text
                                 style={[Theme.style.title,]}
                                 numberOfLines={2}>
-                                {item.producto.name}
+                                {item.product.name}
                             </Text>
                             <View style={[Theme.style.alingHorizontal]}>
                                 <Text
                                     style={{ fontSize: 14, marginRight: 16, color: Theme.colors.primary }}
                                     >
-                                    ${item.producto.product_pricing.real_price}
+                                    ${item.product.product_pricing.real_price}
                                 </Text>
                             </View>
                             <View style={[Theme.style.alingHorizontal, { justifyContent: 'space-between', marginTop: 8 }]}>

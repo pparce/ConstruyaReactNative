@@ -14,6 +14,8 @@ export class CarroService {
             items: [],
             total: 0,
             subtotal: 0,
+            canal: 'store',
+            check_price: 0
         }
         if (ReduxService.instance.getRedux().cart.cart.items) {
             this.cart = ReduxService.instance.getRedux().cart.cart;
@@ -33,6 +35,8 @@ export class CarroService {
             items: [],
             total: 0,
             subtotal: 0,
+            canal: 'store',
+            check_price: 0
         }
     }
 
@@ -71,9 +75,11 @@ export class CarroService {
     buildItem(producto, cantidad, opciones = null) {
         return {
             id: producto.id,
-            producto: producto,
-            cantidad: cantidad,
-            total: this.calcularTotalItem(producto, cantidad),
+            product: producto,
+            qty: cantidad,
+            product_name: producto.name,
+            price: producto.product_pricing.real_price,
+            subtotal: this.calcularTotalItem(producto, cantidad),
         };
     }
 
@@ -106,7 +112,7 @@ export class CarroService {
     calcularSubtotal() {
         var subtotal = 0;
         this.cart.items.forEach(element => {
-            subtotal += element.total;
+            subtotal += element.subtotal;
         });
         this.cart.subtotal = this.redondear(subtotal);
         this.saveCart();

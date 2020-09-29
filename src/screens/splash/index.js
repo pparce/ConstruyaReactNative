@@ -4,6 +4,7 @@ import { StackActions } from '@react-navigation/native';
 import ApiService, { baseUrl } from '../../services/api.service';
 import Axios from 'axios';
 import CarroService from '../../services/carro.service';
+import Theme from '../../assets/styles/theme';
 
 
 export default class Splash extends Component {
@@ -11,16 +12,15 @@ export default class Splash extends Component {
 
     goToScreen(routeName) {
         // this.props.navigation.navigate(routeName)
-        this.props.navigation.dispatch(
-            StackActions.replace('principal', {
-                user: 'jane',
-            })
-        );
+        // this.props.navigation.dispatch(
+        //     StackActions.replace('principal')
+        // );
+
     }
 
     componentDidMount() {
         //Esta configuracion es solo para la version de desarrollo
-        ApiService.instance.get(ApiService.PRODUCTS_MOST_SALED).then(response => {
+        /* ApiService.instance.get(ApiService.PRODUCTS_MOST_SALED).then(response => {
             setTimeout(() => {
                 this.goToScreen('principal')
             }, 1000);
@@ -28,10 +28,10 @@ export default class Splash extends Component {
         }, error => {
             ApiService.instance.changeBaseUrl();
             this.goToScreen('principal')
-        })
-        /* setTimeout(() => {
-            this.goToScreen('principal')
-        }, 1000); */
+        }) */
+        setTimeout(() => {
+            this.props.navigation.navigate('principal');
+        }, 1000);
     }
 
     render() {
@@ -46,7 +46,7 @@ export default class Splash extends Component {
                 }}>
                 <StatusBar barStyle='dark-content' backgroundColor='#ffffff' />
                 <Image resizeMode='contain' style={this.style.Image} source={require('./logo.png')}></Image>
-                <Text>Construya Al Costo</Text>
+                <Text style={{ marginTop: 8 }}>CONSTRUYA AL COSTO</Text>
             </View>
         )
     }

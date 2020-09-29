@@ -7,6 +7,7 @@ import ApiService from '../../../services/api.service';
 import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 import ConnectionsDialogs from '../../../components/connections-dialogs';
+import Theme from '../../../assets/styles/theme';
 
 class Categorias extends Component {
     constructor(props) {
@@ -28,10 +29,9 @@ class Categorias extends Component {
     }
 
     _getCategorias = () => {
-        this.setState({ onLoading: true });
         ApiService.instance.get(ApiService.CATEGORIES).then(
             (response) => {
-                this.setState({ categorias: response, onLoading: false });
+                this.setState({ categorias: response});
             },
             (error) => {
                 this.setState({ onLoading: false, onError: true });
@@ -104,7 +104,7 @@ class Categorias extends Component {
         var cart = this.props.cart.cart;
         return (
             <View style={{ flex: 1 }}>
-                <Appbar.Header style={[MyTheme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
+                <Appbar.Header style={[Theme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
                     <Appbar.Action
                         icon="menu"
                         onPress={() => this.props.navigation.openDrawer()}
@@ -113,7 +113,7 @@ class Categorias extends Component {
                     <Appbar.Action
                         style={{ alignSelf: 'flex-end' }}
                         icon="magnify"
-                        onPress={() => navigation.navigate('buscar')}
+                        onPress={() => this.props.navigation.navigate('buscar')}
                     />
                     {
                         this.props.cart.showCart &&

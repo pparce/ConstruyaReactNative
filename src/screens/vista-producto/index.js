@@ -53,7 +53,7 @@ export default class VistaProducto extends Component {
                     />
                     <Appbar.Content title={this.state.title} />
                 </Appbar.Header>
-                <ScrollView style={{ flexGrow: 1 }}>
+                <ScrollView style={{  }}>
                     <ShimmerPlaceHolder style={{ display: onLoadData ? 'flex' : 'none' }} autoRun={onLoadData} />
 
                     <View style={{ display: onLoadData ? 'none' : 'flex', flex: 1, paddingBottom: 16 }}>

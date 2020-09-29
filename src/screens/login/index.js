@@ -1,61 +1,76 @@
-import * as React from 'react';
-import { Appbar, TextInput, Title, Button, Portal, Dialog, Paragraph, ActivityIndicator, Colors, Snackbar } from 'react-native-paper';
-import { View, Text } from 'react-native';
+import React, { Component } from 'react';
+import { Appbar, Button, Portal, Dialog, Paragraph, ActivityIndicator, Colors, Snackbar, TextInput } from 'react-native-paper';
+import { View, Text, ScrollView, Keyboard } from 'react-native';
 import MyTheme from '../../assets/styles';
 import { StatusBar } from 'react-native';
 import ApiService from '../../services/api.service';
+import { reglas } from '../../utiles/reglas-formulario';
+import CustomInput from '../../components/custom-input'
+import ReduxService from '../../services/redux.service';
+import Theme from '../../assets/styles/theme';
 
-export default class Login extends React.Component {
+export default class Login extends Component {
 
     constructor(props) {
         super(props);
+        this.isFormValid = [];
         this.state = {
-            usuario: '',
-            contrasena: '',
+            username: '',
+            password: '',
             dialogVisibility: false,
-            snackBarVisibility: false
+            snackBarVisibility: false,
+            error: false,
         };
-        this.login = this.login.bind(this);
-        this.showDialog = this.showDialog.bind(this);
-        this.hideDialog = this.hideDialog.bind(this);
-        this.onDismmisSnackBar = this.onDismmisSnackBar.bind(this);
     }
 
     componentDidMount() {
     }
 
-    login() {
-        const { usuario } = this.state;
-        const { contrasena } = this.state;
-        this.setState({ dialogVisibility: true });
-        ApiService.instance.get(connections.USER).then(
-            (request) => {
-                // this.setState({ dialogVisibility: false });
-            },
-            (error) => {
-                // this.setState({
-                //     dialogVisibility: false,
-                //     snackBarVisibility: true
-                // });
-            });
+    login = () => {
+        if (this.isFormValid.length) {
+            this.setState({
+                error: true
+            })
+        } else {
+            const { username, password } = this.state;
+            ApiService.instance.post(ApiService.LOGIN, {
+                'username': username,
+                'password': password
+            }).then(
+                (response) => {
+                    if (response.id) {
+                        ReduxService.instance.getRedux().setLogin(response);
+                        this.props.navigation.goBack();
+                    } else {
+                        this.setState({
+                            snackBarVisibility: true
+                        })
+                    }
+                },
+                (error) => {
+                    this.setState({
+                        snackBarVisibility: true
+                    })
+                });
+        }
+
     }
 
-    showDialog() {
-        this.setState({ dialogVisibility: true });
-    }
-
-    hideDialog() {
-        this.setState({ dialogVisibility: false });
-    }
-
-    onDismmisSnackBar() {
-        this.setState({ snackBarVisibility: false });
+    _addFormError = (clave, error) => {
+        if (error) {
+            if (this.isFormValid.indexOf(clave) == -1) {
+                this.isFormValid.push(clave);
+            }
+        } else {
+            this.isFormValid = this.isFormValid.filter(value => value != clave);
+        }
     }
 
     render() {
+        const { username, password } = this.state;
         return (
-            <View>
-                <Appbar.Header style={[MyTheme.style.toolbar, {marginTop: StatusBar.currentHeight} ]}>
+            <View style={{ flex: 1 }}>
+                <Appbar.Header style={[Theme.style.toolbar]}>
                     <Appbar.Action
                         icon="arrow-left"
                         onPress={() => this.props.navigation.goBack()}
@@ -63,94 +78,105 @@ export default class Login extends React.Component {
                     <Appbar.Content title='Iniciar Sesion' />
 
                 </Appbar.Header>
-                <View style={{ marginTop: 50, flexDirection: 'column', padding: 16 }}>
-                    <Text style={{ fontSize: 36, marginBottom: 16 }}>Bienvenido</Text>
-                    <TextInput
-                        style={{ marginBottom: 16, height: 40 }}
-                        mode='outlined'
-                        label='Usuario'
-                        value=''
-                        onChangeText={text => ''}
-                    />
-                    <TextInput
-                        style={{ marginBottom: 16, height: 40 }}
-                        secureTextEntry
-                        mode='outlined'
-                        label='Contraseña'
-                        value=''
-                        onChangeText={text => ''}
-                    />
-                    <Button
-                        style={{ width: '100%' }}
-                        labelStyle={{ color: '#ffffff' }}
-                        mode="contained"
-
-                        uppercase='true'
-                        onPress={() => {
-                            this.login()
-                        }}>
-                        Entrar
-                        </Button>
-                </View>
-                <View style={{ flexDirection: 'column', paddingHorizontal: 16, alignItems: 'flex-end' }}>
+                <ScrollView keyboardShouldPersistTaps='handled'>
                     <View>
-                        <Button
-                            style={{ alignSelf: 'baseline' }}
-                            labelStyle={{ fontSize: 14 }}
-                            mode="text"
+                        <View style={{ marginTop: 50, padding: 16, flex: 1 }}>
+                            <Text style={{ fontSize: 36, marginBottom: 16 }}>Bienvenido</Text>
+                            <CustomInput
+                                keyboardType='email-address'
+                                textContentType='emailAddress'
+                                label='Correo'
+                                value={username}
+                                error={this.state.error}
+                                onChangeText={(text) => {
+                                    this.setState({ username: text })
+                                }}
+                                isFormValid={(clave, error) => {
+                                    this._addFormError(clave, error);
+                                }}
+                                reglas={reglas.correo}
+                            />
+                            <CustomInput
 
-                            uppercase='true'
-                            onPress={() => {
-                                ''
-                            }}>
-                            Olvide mi Contraseña
+                                label='Contraseña'
+                                secureTextEntry
+                                value={password}
+                                error={this.state.error}
+                                onChangeText={(text) => {
+                                    this.setState({ password: text })
+                                }}
+                                isFormValid={(clave, error) => {
+                                    this._addFormError(clave, error);
+                                }}
+                                reglas={reglas.contrasena}
+                            />
+                            <Button
+                                style={{ width: '100%', marginTop: 16 }}
+                                labelStyle={{ color: '#ffffff' }}
+                                mode="contained"
+
+                                uppercase='true'
+                                onPress={() => {
+                                    this.login()
+                                }}>
+                                Entrar
                         </Button>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text>¿Erees nuevo por aquí?</Text>
-                        <Button
-                            style={{ alignSelf: 'baseline' }}
-                            labelStyle={{ fontSize: 14 }}
-                            mode="text"
-                            uppercase='true'
-                            onPress={() => {
-                                this.props.navigation.navigate('registro');
-                            }}>
-                            Registrarse
+                        </View>
+                        <View style={{ flexDirection: 'column', paddingHorizontal: 16, alignItems: 'flex-end' }}>
+                            <View>
+                                <Button
+                                    style={{ alignSelf: 'baseline' }}
+                                    labelStyle={{ fontSize: 14 }}
+                                    mode="text"
+
+                                    uppercase='true'
+                                    onPress={() => {
+                                        ''
+                                    }}>
+                                    Olvide mi Contraseña
                         </Button>
-                    </View>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text>¿No quieres registrarte ahora?</Text>
-                        <Button
-                            style={{ alignSelf: 'baseline' }}
-                            labelStyle={{ fontSize: 14 }}
-                            mode="text"
-                            uppercase='true'
-                            onPress={() => {
-                                ''
-                            }}>
-                            más tarde
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text>¿Erees nuevo por aquí?</Text>
+                                <Button
+                                    style={{ alignSelf: 'baseline' }}
+                                    labelStyle={{ fontSize: 14 }}
+                                    mode="text"
+                                    uppercase='true'
+                                    onPress={() => {
+                                        this.props.navigation.navigate('registro');
+                                    }}>
+                                    Registrarse
                         </Button>
-                    </View>
-                </View>
-                <Portal>
-                    <Dialog
-                        visible={this.state.dialogVisibility}
-                        dismissable={false}
-                        onDismiss={this.hideDialog}>
-                        <Dialog.Content style={{ flexDirection: 'row' }}>
-                            <ActivityIndicator size='small' animating={true} color={Colors.blue800} />
-                            <Paragraph style={{ marginLeft: 16 }}>Cargando...</Paragraph>
-                        </Dialog.Content>
-                    </Dialog>
-                    <Snackbar
-                        onDismiss={this.onDismmisSnackBar}
-                        duration={2000}
-                        visible={this.state.snackBarVisibility}>
-                        Ha ocurrido un error
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text>¿No quieres registrarte ahora?</Text>
+                                <Button
+                                    style={{ alignSelf: 'baseline' }}
+                                    labelStyle={{ fontSize: 14 }}
+                                    mode="text"
+                                    uppercase='true'
+                                    onPress={() => {
+                                        ''
+                                    }}>
+                                    más tarde
+                        </Button>
+                            </View>
+                        </View>
+                        <Portal>
+                            <Snackbar
+                                onDismiss={() => {
+                                    this.setState({
+                                        snackBarVisibility: false
+                                    })
+                                }}
+                                duration={2000}
+                                visible={this.state.snackBarVisibility}>
+                                Revisa los datos ingresados
                     </Snackbar>
-                </Portal>
-
+                        </Portal>
+                    </View>
+                </ScrollView>
             </View>
         );
     }

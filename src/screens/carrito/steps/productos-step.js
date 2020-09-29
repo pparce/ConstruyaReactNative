@@ -9,7 +9,7 @@ function ProductosStep({ items }) {
     var cart = CarroService.instance.getCart();
     var items = cart.items;
     return (
-        <View style={{ backgroundColor: 'rgba(0,0,0,00)' }}>
+        <View style={[Theme.style.container, {  backgroundColor: 'rgba(0,0,0,00)' }]}>
             <ListadoProductosCarrito
                 title='manten presionado para mas opciones'
                 productos={items}

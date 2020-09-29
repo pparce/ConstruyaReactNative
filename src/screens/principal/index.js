@@ -5,16 +5,16 @@ import Categorias from './fragments/categorias';
 import { Snackbar } from 'react-native-paper';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerHeader from '../../components/drawer-header'
-import MyTheme from '../../assets/styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import CarroService from '../../services/carro.service';
+import Theme from '../../assets/styles/theme';
 
 export default class Principal extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            snackBarVisibility: false
+            snackBarVisibility: false,
+            opacityDrawer: 0,
         };
         this.backHandler = null;
         this.blurEvents = null;
@@ -24,6 +24,11 @@ export default class Principal extends Component {
     }
 
     componentDidMount() {
+        setTimeout(() => {
+            this.setState({
+                opacityDrawer: 1
+            })
+        }, 2000);
         this.blurEvents = this.props.navigation.addListener('blur', e => {
             // Prevent default action
             if (this.backHandler)
@@ -63,31 +68,34 @@ export default class Principal extends Component {
                 <Drawer.Navigator
                     drawerType='front'
                     drawerContent={(props) => <DrawerHeader {...props} />}
-                    initialRouteName="inicio"
+                    initialRouteName='inicio'
+                    drawerStyle={{
+                        opacity: this.state.opacityDrawer
+                    }}
                     drawerContentOptions={{
-                        activeBackgroundColor: MyTheme.colors.primary,
+                        activeBackgroundColor: Theme.colors.primary,
                         activeTintColor: '#ffffff',
                     }}>
                     <Drawer.Screen
-                        name="inicio"
+                        name='inicio'
                         component={Inicio}
                         options={{
                             drawerIcon: ({ focused }) => (
-                                <Icon name="home" size={24} color={focused ? MyTheme.colors.white : MyTheme.colors.black} />
+                                <Icon name='home' size={24} color={focused ? Theme.colors.white : Theme.colors.black} />
                             ),
                             drawerLabel: ({ focused }) => (
-                                <Text style={focused ? { color: MyTheme.colors.white } : { color: MyTheme.colors.black }}>Inicio</Text>
-                            )
+                                <Text style={focused ? { color: Theme.colors.white } : { color: Theme.colors.black }}>Inicio</Text>
+                            ),
                         }} />
                     <Drawer.Screen
-                        name="Categorias"
+                        name='Categorias'
                         component={Categorias}
                         options={{
                             drawerIcon: ({ focused, size }) => (
-                                <Icon name="shopping" size={24} color={focused ? MyTheme.colors.white : MyTheme.colors.black} />
+                                <Icon name='shopping' size={24} color={focused ? Theme.colors.white : Theme.colors.black} />
                             ),
                             drawerLabel: ({ color, focused }) => (
-                                <Text style={focused ? { color: MyTheme.colors.white } : { color: MyTheme.colors.black }}>Categorias</Text>
+                                <Text style={focused ? { color: Theme.colors.white } : { color: Theme.colors.black }}>Categorias</Text>
                             )
                         }} />
                 </Drawer.Navigator>
@@ -97,28 +105,6 @@ export default class Principal extends Component {
                     visible={this.state.snackBarVisibility}>
                     Presione una vez más para cerrar
                     </Snackbar>
-            </View>
-        );
-    }
-
-    Principal() {
-        const ColorPrimary = style.ColorPrimary;
-        return (
-            <View style={{ flex: 1 }}>
-                <Drawer.Navigator
-                    drawerContent={(props) => <DrawerHeader {...props} />}
-                    initialRouteName="inicio"
-                    drawerContentOptions={{
-                        activeBackgroundColor: MyTheme.colors.primary,
-                        activeTintColor: '#ffffff',
-                    }}>
-                    <Drawer.Screen
-                        name="Inicio"
-                        component={Inicio} />
-                    <Drawer.Screen
-                        name="Productos"
-                        component={Categorias} />
-                </Drawer.Navigator>
             </View>
         );
     }

@@ -11,20 +11,22 @@ const Theme = {
         surface: '#ffffff',
         error: '#B00020',
         text: '#000000',
-        subtitle: '#757575',
         onBackground: '#ffffff',
         onSurface: '#212121',
         disabled: '#BDBDBD',
-        placeholder: '#000000',
+        placeholder: '#757575',
         backdrop: 'rgba(0,0,0,0.5)',
         notification: '#F44336',
         black: '#000000',
         white: '#ffffff',
-        ripple: '#BDBDBD'
+        ripple: '#BDBDBD',
+        gris: '#616161',
+        grisClaro: '#E0E0E0',
+        subtitle: '#757575',
     },
     fonts: configureFonts(),
     animation: {
-        scale: 1.0,
+        scale: 0.5,
     },
     style: StyleSheet.create({
         toolbar: {
@@ -33,7 +35,8 @@ const Theme = {
         },
         container: {
             paddingHorizontal: 16,
-            paddingTop: 8
+            paddingTop: 8,
+            paddingBottom: 16
         },
         drawerHeaderContainer: {
             padding: 16,
@@ -57,10 +60,21 @@ const Theme = {
             width: Dimensions.get('window').width / 2 - 24
         },
         title: {
+            fontSize: 18,
             color: '#000000'
         },
+        titleBold: {
+            fontSize: 18,
+            color: '#000000',
+            fontWeight: '900',
+        },
         subtitle: {
-            color: '#616161'
+            fontSize: 14,
+            color: '#616161',
+        },
+        subtitleBold: {
+            fontSize: 14,
+            color: '#000000',
         }
     })
 };

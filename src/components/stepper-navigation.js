@@ -14,13 +14,25 @@ function StepperNavigation({ currentPage, steppers = [], next, back, end }) {
                 mode='text'>
                 Atras
             </Button>
-            <Button
-                style={style.button}
-                uppercase
-                onPress={isEnd ? end : next}
-                mode='text'>
-                {isEnd ? 'Finalizar' : 'Siguiente'}
-            </Button>
+            {
+                !isEnd
+                    ?
+                    <Button
+                        style={style.button}
+                        uppercase
+                        onPress={isEnd ? end : next}
+                        mode='text'>
+                        Siguiente
+                    </Button>
+                    :
+                    <Button
+                        style={style.buttonFinalizar}
+                        uppercase
+                        onPress={end}
+                        mode='contained'>
+                        Finalizar
+                    </Button>
+            }
 
         </View>
     );
@@ -38,6 +50,9 @@ const style = StyleSheet.create({
         borderColor: theme.colors.black,
     },
     button: {
+        margin: 8,
+    },
+    buttonFinalizar: {
         margin: 8,
     }
 })

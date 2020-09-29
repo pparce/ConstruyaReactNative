@@ -1,5 +1,7 @@
 package com.construyareact;
 
+import android.widget.Toast;
+
 import com.facebook.react.ReactActivity;
 
 public class MainActivity extends ReactActivity {

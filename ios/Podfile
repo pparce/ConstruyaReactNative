@@ -18,6 +18,10 @@ target 'ConstruyaReact' do
 
   pod 'RNSharedElement', :path => '../node_modules/react-native-shared-element'
 
+  pod 'react-native-maps', :path => '../node_modules/react-native-maps'
+
+  pod 'RNBottomActionSheet', :path => '../node_modules/react-native-bottom-action-sheet'
+
   target 'ConstruyaReactTests' do
     inherit! :complete
     # Pods for testing
