@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View } from "react-native";
+import { BackHandler, View } from "react-native";
 import { Appbar, Button, List } from 'react-native-paper';
 import MyTheme from '../../../assets/styles';
 import { StatusBar } from 'react-native';
@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 import ConnectionsDialogs from '../../../components/connections-dialogs';
 import Theme from '../../../assets/styles/theme';
+import ReduxService from '../../../services/redux.service';
 
 class Categorias extends Component {
     constructor(props) {
@@ -31,12 +32,25 @@ class Categorias extends Component {
     _getCategorias = () => {
         ApiService.instance.get(ApiService.CATEGORIES).then(
             (response) => {
-                this.setState({ categorias: response});
+                this.setState({ categorias: response });
             },
             (error) => {
-                this.setState({ onLoading: false, onError: true });
+                console.log(error);
             }
-        );
+        ).catch(error => {
+            ReduxService.instance.getRedux().hideLoading();
+            if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                ReduxService.instance.getRedux().showErrorConnectionDialog({
+                    action: () => {
+                        this._getCategorias();
+                    },
+                    cancel: () => {
+                        BackHandler.exitApp();
+                    },
+                    params: 'categoria'
+                });
+            }
+        });
     }
 
     _createViews = () => {

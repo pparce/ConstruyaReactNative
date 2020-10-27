@@ -8,6 +8,7 @@ import Theme from '../../assets/styles/theme';
 import ApiService from '../../services/api.service';
 import Utiles from '../../utiles/funciones_utiles';
 import TablaResumenCarro from '../../components/tabla-resumen-carro';
+import ReduxService from '../../services/redux.service';
 
 class VistaPedido extends Component {
     constructor(props) {
@@ -25,14 +26,23 @@ class VistaPedido extends Component {
     _getPedido() {
         ApiService.instance.get(ApiService.instance.buildUrlById(ApiService.ORDER_BY_ID, this.state.id)).then(
             response => {
-                console.log(response);
                 this.setState({
                     pedido: response,
                 })
-            }, error => {
-                console.log(error)
-            }
-        );
+            }).catch(error => {
+                ReduxService.instance.getRedux().hideLoading();
+                if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                    ReduxService.instance.getRedux().showErrorConnectionDialog({
+                        action: () => {
+                            this._getPedido();
+                        },
+                        cancel: () => {
+                            this.props.navigation.goBack();
+                        },
+                        params: 'vista producto'
+                    });
+                }
+            });
     }
 
     _addItems = () => {
@@ -48,10 +58,10 @@ class VistaPedido extends Component {
                             paddingHorizontal: 16,
                             paddingVertical: 16,
                         }]}>
-                        <Text style={{ flex: 2, color: Theme.colors.gris, fontSize: 16 }}>{productos[index].product_name}</Text>
-                        <Text style={{ flex: 1, color: Theme.colors.gris, fontSize: 16 }}>{productos[index].price}</Text>
-                        <Text style={{ flex: 0.5, color: Theme.colors.gris, fontSize: 16 }}>{productos[index].qty}</Text>
-                        <Text style={{ flex: 1, color: Theme.colors.gris, fontSize: 16, textAlign: 'right' }}>{productos[index].subtotal}</Text>
+                        <Text style={{ flex: 2, color: Theme.colors.gris, fontSize: 14 }}>{productos[index].product_name}</Text>
+                        <Text style={{ flex: 1, color: Theme.colors.gris, fontSize: 14 }}>{productos[index].price}</Text>
+                        <Text style={{ flex: 0.5, color: Theme.colors.gris, fontSize: 14 }}>{productos[index].qty}</Text>
+                        <Text style={{ flex: 1, color: Theme.colors.gris, fontSize: 14, textAlign: 'right' }}>{productos[index].subtotal}</Text>
                     </View>
                     <Divider style={{ height: 1 }} />
                 </Fragment>
@@ -99,10 +109,10 @@ class VistaPedido extends Component {
                                         paddingVertical: 8,
                                         backgroundColor: Theme.colors.grisClaro
                                     }]}>
-                                    <Text style={{ flex: 2, color: Theme.colors.black, fontSize: 16 }}>PRODUCTO</Text>
-                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 16 }}>PRECIO</Text>
-                                    <Text style={{ flex: 0.5, color: Theme.colors.black, fontSize: 16 }}>CANT.</Text>
-                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 16, textAlign: 'right' }}>TOTAL</Text>
+                                    <Text style={{ flex: 2, color: Theme.colors.black, fontSize: 14 }}>PRODUCTO</Text>
+                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 14 }}>PRECIO</Text>
+                                    <Text style={{ flex: 0.5, color: Theme.colors.black, fontSize: 14 }}>CANT.</Text>
+                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 14, textAlign: 'right' }}>TOTAL</Text>
                                 </View>
                                 <View style={{ flex: 1 }}>
                                     {
@@ -146,11 +156,11 @@ class VistaPedido extends Component {
 const style = StyleSheet.create({
     textoResaltado: {
         color: Theme.colors.primary,
-        fontSize: 20,
+        fontSize: 18,
     },
     texto: {
         color: Theme.colors.gris,
-        fontSize: 18,
+        fontSize: 16,
     }
 });
 

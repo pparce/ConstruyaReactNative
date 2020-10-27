@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
-import { Button, Caption, Checkbox, TextInput, Title } from 'react-native-paper';
+import { Button, Caption, Checkbox, Portal, TextInput, Title } from 'react-native-paper';
 import Theme from '../../../assets/styles/theme';
 import MapView, { PROVIDER_GOOGLE, AnimatedRegion, Marker } from 'react-native-maps';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -10,6 +10,10 @@ import ApiService from '../../../services/api.service';
 import ReduxService from '../../../services/redux.service';
 import { reglas } from '../../../utiles/reglas-formulario';
 import DialogCountry from '../../../components/dialog-country';
+import Axios from 'axios';
+import DialogAddress from '../../../components/dialog-address';
+import EmptyScreen from '../../../components/empty-screen';
+import { connect } from 'react-redux';
 
 class EnvioStep extends Component {
     constructor(props) {
@@ -18,10 +22,8 @@ class EnvioStep extends Component {
         this.estados = [];
         this.ciudades = [];
         this.isFormValid = [];
-        console.log(this.props.login);
         let data = this.props.login.isLogin ?
             this.props.login.login.customer.customer_billing_information : null;
-
         this.state = {
             scrollEnabled: true,
             mapa: this._getInitialStateCamera(),
@@ -39,6 +41,11 @@ class EnvioStep extends Component {
             impuesto: data ? data.tax : '',
             id: data ? data.id : 0,
             error: false,
+            addressDialog: {
+                show: false,
+                title: '',
+                listado: []
+            },
             dialog: {
                 show: false,
                 title: '',
@@ -82,7 +89,6 @@ class EnvioStep extends Component {
     _getState = (id) => {
         ApiService.instance.get(ApiService.instance.buildUrlById(ApiService.PROVINCIAS, id)).then(
             response => {
-                console.log('pepe: ' + response);
                 if (response.length) {
                     this._showDialog({
                         show: true,
@@ -137,6 +143,38 @@ class EnvioStep extends Component {
         );
     }
 
+    _getAddress = () => {
+        ReduxService.instance.getRedux().showLoading();
+        let url = ApiService.ADDRESS;
+        ApiService.instance.get(url).then(
+            response => {
+
+                this._showAddressDialog({
+                    show: true,
+                    title: 'Listado de Direcciones',
+                    listado: response,
+                    onItemClick: (address) => {
+                        this.setState({
+                            addressDialog: {
+                                listado: [],
+                                show: false,
+                                title: '',
+                            },
+                            nombre: address.first_name,
+                            apellidos: address.last_name,
+                            pais: address.country,
+                            estado: address.state,
+                            ciudad: address.city,
+                            codigoZip: address.zip_code,
+                            telefono: address.phone
+                        });
+                    }
+                });
+            }).catch((error) => {
+                console.log(error);
+            });
+    }
+
     _onSubmit = () => {
         if (this.isFormValid.length) {
             this.setState({
@@ -168,6 +206,13 @@ class EnvioStep extends Component {
         Keyboard.dismiss();
         this.setState({
             dialog: dialog
+        });
+    }
+
+    _showAddressDialog = (dialog) => {
+        Keyboard.dismiss();
+        this.setState({
+            addressDialog: dialog
         });
     }
 
@@ -225,222 +270,232 @@ class EnvioStep extends Component {
         return customer_billing_information;
     }
 
+    _findAddress = () => {
+        let address = this.state.address + ','
+            + this.state.ciudad.name + ','
+            + this.state.estado.name + ','
+            + this.state.pais.name
+        ApiService.instance._findAddress(address).then(
+            (response) => {
+                console.log(response);
+                let latitud = response.data.items[0].position.lat;
+                let longitud = response.data.items[0].position.lng;
+                this._onPressMapView(latitud, longitud)
+            })
+            .catch((error) => {
+                console.log('error' + error);
+            })
+    }
+
+    _findAddressByCoordinates = (latitude, longitude) => {
+
+    }
+
+    _onPressMapView = (latitude, longitude) => {
+        setTimeout(() => {
+
+        }, 0);
+        this.setState({
+            isMarked: true,
+            markerCoordinates: { latitude, longitude },
+
+        });
+        this.map.animateCamera({ center: { latitude, longitude }, pitch: 2, heading: 20, altitude: 100, zoom: 17 }, 200)
+
+    }
+
     render() {
         const { data, nombre, apellidos, direccion, codigoZip, pais, estado, ciudad, telefono, impuesto } = this.state;
         return (
             <View style={{ flex: 1 }}>
-                <ScrollView
-                    scrollEnabled={this.state.scrollEnabled}>
-                    <View style={Theme.style.container}>
-                        <View>
-                            <View style={Theme.style.alingHorizontal}>
-                                <CustomInput
-                                    style={{ marginRight: 8, height: 40, flex: 1 }}
-                                    label='Nombre'
-                                    value={nombre}
-                                    error={this.state.error}
-                                    onChangeText={(text) => {
-                                        this.setState({ nombre: text })
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.nombre}
-                                />
-                                <CustomInput
-                                    style={{ height: 40, flex: 1 }}
-                                    label='Apellidos'
-                                    value={apellidos}
-                                    error={this.state.error}
-                                    onChangeText={(text) => {
-                                        this.setState({ apellidos: text })
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.apellidos}
-                                />
+                {
+                    this.props.login.isLogin ?
+                        <ScrollView
+                            scrollEnabled={this.state.scrollEnabled}>
+                            <View style={Theme.style.container}>
+                                {this.props.login.isLogin && this.props.login.login.customer.address.length > 0 &&
+                                    <Button mode='outlined'
+                                        uppercase
+                                        onPress={() => {
+                                            this._getAddress();
+                                        }}>escoger otra direccion</Button>}
+                                <View>
+                                    <View style={Theme.style.alingHorizontal}>
+                                        <CustomInput
+                                            style={{ marginRight: 8, height: 40, flex: 1 }}
+                                            label='Nombre'
+                                            value={nombre}
+                                            error={this.state.error}
+                                            onChangeText={(text) => {
+                                                this.setState({ nombre: text })
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.nombre}
+                                        />
+                                        <CustomInput
+                                            style={{ height: 40, flex: 1 }}
+                                            label='Apellidos'
+                                            value={apellidos}
+                                            error={this.state.error}
+                                            onChangeText={(text) => {
+                                                this.setState({ apellidos: text })
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.apellidos}
+                                        />
+                                    </View>
+                                    <View style={Theme.style.alingHorizontal}>
+                                        <InputCountry
+                                            onPress={() => {
+                                                this._getCountry();
+                                            }}
+                                            style={{
+                                                height: 40,
+                                                marginRight: 8,
+                                                flex: 1
+                                            }}
+                                            mode='outlined'
+                                            label='País'
+                                            value={pais.name}
+                                            editable={true}
+                                            error={this.state.error}
+                                            onChangeText={(text) => {
+                                                this.setState()
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.pais}
+                                        />
+                                        <InputCountry
+                                            onPress={() => {
+                                                this._getState(this.state.pais.id);
+                                            }}
+                                            style={{
+
+                                                height: 40,
+                                                marginRight: 8,
+                                                flex: 1
+                                            }}
+                                            mode='outlined'
+                                            label='Estado'
+                                            value={estado.name}
+                                            editable={false}
+                                            error={this.state.error}
+                                            disabled={!this.state.pais.id}
+                                            onChangeText={(text) => {
+                                                this.setState({ apellidos: text })
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.estado}
+                                        />
+                                        <InputCountry
+                                            onPress={() => {
+                                                this._getCity(this.state.estado.id);
+                                            }}
+                                            style={{ height: 40, flex: 1 }}
+                                            mode='outlined'
+                                            label='Ciudad'
+                                            value={ciudad.name}
+                                            editable={false}
+                                            error={this.state.error}
+                                            disabled={!this.state.estado.id}
+                                            onChangeText={(text) => {
+                                                this.setState({ ciudad: text })
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.ciudad}
+                                        />
+                                    </View>
+                                    <View style={Theme.style.alingHorizontal}>
+                                        <CustomInput
+                                            style={{
+
+                                                height: 40,
+                                                marginRight: 8,
+                                                flex: 2
+                                            }}
+                                            mode='outlined'
+                                            label='Dirección'
+                                            value={direccion}
+                                            error={this.state.error}
+                                            onChangeText={(text) => {
+                                                this.setState({ direccion: text })
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.direccion}
+                                        />
+                                        <CustomInput
+                                            style={{ height: 40, flex: 1 }}
+                                            mode='outlined'
+                                            label='Código ZIP'
+                                            value={codigoZip}
+                                            error={this.state.error}
+                                            onChangeText={(text) => {
+                                                this.setState({ codigoZip: text })
+                                            }}
+                                            isFormValid={(clave, error) => {
+                                                this._addFormError(clave, error);
+                                            }}
+                                            reglas={reglas.codigoZip}
+                                        />
+                                    </View>
+
+                                    <CustomInput
+                                        mode='outlined'
+                                        label='Teléfono'
+                                        value={telefono}
+                                        error={this.state.error}
+                                        onChangeText={(text) => {
+                                            this.setState({ telefono: text })
+                                        }}
+                                        isFormValid={(clave, error) => {
+                                            this._addFormError(clave, error);
+                                        }}
+                                        reglas={reglas.telefono}
+                                    />
+                                    <CustomInput
+                                        mode='outlined'
+                                        label='Impuesto'
+                                        value={impuesto}
+                                        error={this.state.error}
+                                        onChangeText={(text) => {
+                                            this.setState({ impuesto: text })
+                                        }}
+                                        isFormValid={(clave, error) => {
+                                            this._addFormError(clave, error);
+                                        }}
+                                    />
+                                </View>
                             </View>
-                            <View style={Theme.style.alingHorizontal}>
-                                <InputCountry
-                                    onPress={() => {
-                                        this._getCountry();
-                                    }}
-                                    style={{
-                                        height: 40,
-                                        marginRight: 8,
-                                        flex: 1
-                                    }}
-                                    mode='outlined'
-                                    label='País'
-                                    value={pais.name}
-                                    editable={true}
-                                    error={this.state.error}
-                                    onChangeText={(text) => {
-                                        this.setState()
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.pais}
-                                />
-                                <InputCountry
-                                    onPress={() => {
-                                        this._getState(this.state.pais.id);
-                                    }}
-                                    style={{
-
-                                        height: 40,
-                                        marginRight: 8,
-                                        flex: 1
-                                    }}
-                                    mode='outlined'
-                                    label='Estado'
-                                    value={estado.name}
-                                    editable={false}
-                                    error={this.state.error}
-                                    disabled={!this.state.pais.id}
-                                    onChangeText={(text) => {
-                                        this.setState({ apellidos: text })
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.estado}
-                                />
-                                <InputCountry
-                                    onPress={() => {
-                                        this._getCity(this.state.estado.id);
-                                    }}
-                                    style={{ height: 40, flex: 1 }}
-                                    mode='outlined'
-                                    label='Ciudad'
-                                    value={ciudad.name}
-                                    editable={false}
-                                    error={this.state.error}
-                                    disabled={!this.state.estado.id}
-                                    onChangeText={(text) => {
-                                        this.setState({ ciudad: text })
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.ciudad}
-                                />
-                            </View>
-                            <View style={Theme.style.alingHorizontal}>
-                                <CustomInput
-                                    style={{
-
-                                        height: 40,
-                                        marginRight: 8,
-                                        flex: 2
-                                    }}
-                                    mode='outlined'
-                                    label='Dirección'
-                                    value={direccion}
-                                    error={this.state.error}
-                                    onChangeText={(text) => {
-                                        this.setState({ direccion: text })
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.direccion}
-                                />
-                                <CustomInput
-                                    style={{ height: 40, flex: 1 }}
-                                    mode='outlined'
-                                    label='Código ZIP'
-                                    value={codigoZip}
-                                    error={this.state.error}
-                                    onChangeText={(text) => {
-                                        this.setState({ codigoZip: text })
-                                    }}
-                                    isFormValid={(clave, error) => {
-                                        this._addFormError(clave, error);
-                                    }}
-                                    reglas={reglas.codigoZip}
-                                />
-                            </View>
-
-                            <CustomInput
-                                mode='outlined'
-                                label='Teléfono'
-                                value={telefono}
-                                error={this.state.error}
-                                onChangeText={(text) => {
-                                    this.setState({ telefono: text })
-                                }}
-                                isFormValid={(clave, error) => {
-                                    this._addFormError(clave, error);
-                                }}
-                                reglas={reglas.telefono}
-                            />
-                            <CustomInput
-
-                                mode='outlined'
-                                label='Impuesto'
-                                value={impuesto}
-                                error={this.state.error}
-                                onChangeText={(text) => {
-                                    this.setState({ impuesto: text })
-                                }}
-                                isFormValid={(clave, error) => {
-                                    this._addFormError(clave, error);
-                                }}
-                            />
-                            {/* <Button
-                                style={{
-                                    width: '50%',
-                                    alignSelf: 'flex-end',
-                                    marginTop: 16
-                                }}
-                                onPress={() => {
-                                    this._onSubmit();
-                                }}
-                                mode='contained'>
-                                Guardar
-                            </Button> */}
-                        </View>
-                    </View>
-                    <MapView
+                            {/* <MapView
                         zoomEnabled={true}
                         zoom={100000}
                         scrollEnabled={true}
                         onTouchStart={(event) => {
-                            console.log('start');
                             this.setState({
                                 scrollEnabled: false
                             })
                         }}
                         onTouchEnd={(event) => {
-                            console.log('finish');
                             this.setState({
                                 scrollEnabled: true
                             })
                         }}
                         onPress={(event) => {
-                            console.log(event.nativeEvent.coordinate);
                             let latitude = event.nativeEvent.coordinate.latitude;
                             let longitude = event.nativeEvent.coordinate.longitude;
-                            setTimeout(() => {
-
-                            }, 0);
-                            this.setState({
-                                isMarked: true,
-                                markerCoordinates: { latitude, longitude },
-                                /* mapa: { 
-                                    center: { latitude, longitude }, pitch: 2, heading: 20, altitude: 100, zoom: 17 } */
-                            });
-                            // this.map.animateToRegion({
-                            //     latitude: latitude,
-                            //     longitude: longitude,
-                            //     latitudeDelta: 0.0922,
-                            //     longitudeDelta: 0.0421,
-                            // }, 2000)
-                            this.map.animateCamera({ center: { latitude, longitude }, pitch: 2, heading: 20, altitude: 100, zoom: 17 }, 200)
-
+                            this._onPressMapView(latitude, longitude);
                         }}
                         ref={(map) => { this.map = map; }}
                         showsUserLocation={true}
@@ -453,25 +508,53 @@ class EnvioStep extends Component {
                                 coordinate={this.state.markerCoordinates}
                             />
                         }
-                    </MapView>
-                </ScrollView>
-                <DialogCountry
-                    onDismiss={() => {
-                        this.setState({
-                            dialog: {
-                                ...this.state.dialog,
-                                show: false,
-                            }
-                        })
-                    }}
-                    dialog={this.state.dialog} />
+                    </MapView> */}
+                        </ScrollView> :
+                        <ScrollView>
+                            <View style={[Theme.style.container, { backgroundColor: 'transparent', alignItems: 'center', alignContent: 'center' }]}>
+                                <EmptyScreen
+                                    key='2'
+                                    icon='account-off'
+                                    titulo='No esta registrado'
+                                    subtitulo='Para poder completar la compra debe registrarse'
+                                     />
+                            </View>
+                        </ScrollView>
+                }
+                <Portal>
+                    <DialogCountry
+                        onDismiss={() => {
+                            this.setState({
+                                dialog: {
+                                    ...this.state.dialog,
+                                    show: false,
+                                }
+                            })
+                        }}
+                        dialog={this.state.dialog} />
+                    <DialogAddress
+                        onDismiss={() => {
+                            this.setState({
+                                addressDialog: {
+                                    ...this.state.addressDialog,
+                                    show: false,
+                                }
+                            })
+                        }}
+                        dialog={this.state.addressDialog} />
+                </Portal>
             </View>
         );
     }
 }
 
-const style = StyleSheet.create({
-
+const mapStateToProps = state => ({
+    login: state.login,
+    cart: state.cart
 });
 
-export default EnvioStep;
+const mapDispatchToProps = {
+    // setCart: setCart
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(EnvioStep);

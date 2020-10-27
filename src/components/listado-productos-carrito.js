@@ -10,7 +10,7 @@ class ListadoProductosCarrito extends Component {
         super(props);
         this.state = {
             title: this.props.title,
-            items: this.props.items
+            items: this.props.productos
         };
     }
 
@@ -24,7 +24,7 @@ class ListadoProductosCarrito extends Component {
 
     _renderItem = ({ item }) => {
         return (
-            <ItemProductCart item={item} onPressItem={this._onPressItem} />
+            <ItemProductCart item={item} onPressItem={this._onPressItem} onLongPressItem={this.props.onLongPressItem} />
         );
     }
 
@@ -32,7 +32,7 @@ class ListadoProductosCarrito extends Component {
         return (
             <Fragment>
                 <FlatList
-                style={{}}
+                    style={{}}
                     data={this.props.productos}
                     renderItem={this._renderItem}
                     keyExtractor={this._renderMyKeyExtractor}

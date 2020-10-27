@@ -5,6 +5,7 @@ import Shimmer from "./shimmer";
 import { useNavigation } from '@react-navigation/native';
 import ApiService from '../services/api.service';
 import Theme from '../assets/styles/theme';
+import Utiles from '../utiles/funciones_utiles';
 
 
 function ItemProductCart(props) {
@@ -18,6 +19,9 @@ function ItemProductCart(props) {
                 style={{ width: '100%' }}
                 rippleColor={Theme.colors.ripple}
                 onPress={() => {
+                }}
+                onLongPress={() => {
+                    props.onLongPressItem(item)
                 }}>
                 <Fragment>
                     <View
@@ -43,29 +47,32 @@ function ItemProductCart(props) {
                         </Shimmer>
                         <View style={{ paddingLeft: 16, flex: 1 }}>
                             <Text
-                                style={[Theme.style.title,]}
+                                style={{
+                                    fontSize: 16,
+                                    color: '#000000'
+                                }}
                                 numberOfLines={2}>
                                 {item.product.name}
                             </Text>
                             <View style={[Theme.style.alingHorizontal]}>
                                 <Text
                                     style={{ fontSize: 14, marginRight: 16, color: Theme.colors.primary }}
-                                    >
+                                >
                                     ${item.product.product_pricing.real_price}
                                 </Text>
                             </View>
                             <View style={[Theme.style.alingHorizontal, { justifyContent: 'space-between', marginTop: 8 }]}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Text style={{ color: Theme.colors.subtitle }}>cantidad</Text>
-                            <Text style={{ color: Theme.colors.subtitle }}>{item.cantidad}</Text>
+                                    <Text style={{ color: Theme.colors.subtitle }}>{item.qty}</Text>
                                 </View>
-                                <View style={{alignItems: 'flex-end'}}>
+                                <View style={{ alignItems: 'flex-end' }}>
                                     <Text style={{ color: Theme.colors.subtitle }}>Impuesto($)</Text>
                                     <Text style={{ color: Theme.colors.subtitle }}>00.00</Text>
                                 </View>
-                                <View style={{alignItems: 'flex-end'}}>
+                                <View style={{ alignItems: 'flex-end' }}>
                                     <Text style={{ color: Theme.colors.subtitle }}>Total($)</Text>
-                            <Text style={{ color: Theme.colors.subtitle }}>{item.total}</Text>
+                                    <Text style={{ color: Theme.colors.subtitle }}>{Utiles._redondearValorDecimal(item.subtotal)}</Text>
                                 </View>
                             </View>
                         </View>

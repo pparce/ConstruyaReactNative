@@ -11,6 +11,7 @@ import Theme from '../assets/styles/theme';
 import ItemMenuDialog from './item-menu-dialog';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import RNBottomActionSheet from 'react-native-bottom-action-sheet';
+import ReduxService from '../services/redux.service';
 
 
 function ItemList(props) {
@@ -18,13 +19,13 @@ function ItemList(props) {
     const [dialog, setDialog] = useState(false);
     const [opciones, setOpciones] = useState(false);
     const [response, setResponse] = useState();
-    var cantidad = 0;
+    var cantidad = 1;
     var urlImagen = ApiService.IMAGE_BASE_URL + item.product_image_main;
     var [showShimmer, setShowShimmer] = useState(false);
     var navigation = useNavigation();
     let [sheetView, setsheetView] = useState(false);
 
-    const onAdd = () => {
+    const _onAdd = () => {
         const url = ApiService.instance.buildUrlById(
             ApiService.PRODUCTS_BY_ID,
             item.id)
@@ -35,10 +36,20 @@ function ItemList(props) {
                     setResponse(response);
                 }
                 // CarroService.instance.addItemToCart(response, 1);
-            }, error => {
-
-            }
-        );
+            }).catch(error => {
+                ReduxService.instance.getRedux().hideLoading();
+                if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                    ReduxService.instance.getRedux().showErrorConnectionDialog({
+                        action: () => {
+                            this._onAdd();
+                        },
+                        cancel: () => {
+                            // this.props.navigation.goBack();
+                        },
+                        params: 'vista producto'
+                    });
+                }
+            });
     };
 
     return (
@@ -48,7 +59,9 @@ function ItemList(props) {
                 onPress={() => {
                     navigation.push('vista_producto', { item: item, urlImagen: urlImagen });
                 }}
-                onLongPress={props.onLongPress}>
+                onLongPress={() => {
+                    props.onLongPress(item)
+                }}>
                 <Card.Content style={{ paddingHorizontal: 0, paddingTop: 0 }}>
                     <Shimmer
                         style={{ width: '100%', height: 150 }}
@@ -102,10 +115,10 @@ function ItemList(props) {
                             fontSize: 12
                         }}
                         onPress={() => {
-                            onAdd()
+                            _onAdd()
                         }}
                         icon='cart'
-                        mode='contained'
+                        mode='outlined'
                         uppercase>Agregar</Button>
                 </Card.Actions>
             </Card>
@@ -157,30 +170,7 @@ function ItemList(props) {
                         </Button>
                     </Dialog.Actions>
                 </Dialog>
-                {/* <Dialog
-                    visible={opciones}
-                    dismissable={true}
-                    onDismiss={() => {
-                        setOpciones(false);
-                    }}>
-                    <Dialog.Title style={{fontSize: 16}}> 
-                        Opciones
-                    </Dialog.Title>
-                    <ItemMenuDialog
-                        icon='heart-outline'
-                        label='Agregar a favorito'
-                        onPress={() => {
-                            setOpciones(false);
-                            alert('click')
-                        }} />
-                    <ItemMenuDialog
-                        icon='information-outline'
-                        label='Detalles'
-                        onPress={() => {
-                            setOpciones(false);
-                            alert('click')
-                        }} />
-                </Dialog> */}
+
             </Portal>
         </View>
     );

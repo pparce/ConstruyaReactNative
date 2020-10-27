@@ -28,7 +28,7 @@ class CustomInput extends Component {
                     mode='outlined'
                     dense
                     label={this.state.label}
-                    value={this.state.value}
+                    value={this.props.value}
                     onChangeText={this.state.onChangeText}
                     error={this.state.error}
                     onChangeText={(text) => {

@@ -1,7 +1,8 @@
+import CookieManager from '@react-native-community/cookies';
 import React, { Component, Fragment } from 'react';
 import { StatusBar, Text, View } from "react-native";
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { Appbar, Avatar, Card, Title, TouchableRipple } from 'react-native-paper';
+import { Appbar, Avatar, Button, Card, Dialog, Paragraph, Portal, Title, TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { connect } from 'react-redux';
 import Theme from '../../assets/styles/theme';
@@ -10,13 +11,24 @@ import ReduxService from '../../services/redux.service';
 import Utiles from '../../utiles/funciones_utiles';
 
 class Usuario extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             user: this.props.login.login.customer.user,
-            customer: this.props.login.login.customer
+            customer: this.props.login.login.customer,
+            logoutDialog: false
         }
     }
+
+    _logout = () => {
+        this.setState({
+            logoutDialog: false
+        })
+        ReduxService.instance.getRedux().setLogin({});
+        this.props.navigation.goBack();
+    }
+
     render() {
         const { user, customer } = this.state;
         const billing_information = customer.customer_billing_information;
@@ -32,8 +44,9 @@ class Usuario extends Component {
                     <Appbar.Action
                         icon="logout"
                         onPress={() => {
-                            ReduxService.instance.getRedux().setLogin({});
-                            this.props.navigation.goBack();
+                            this.setState({
+                                logoutDialog: true
+                            })
                         }}
                     />
 
@@ -99,7 +112,15 @@ class Usuario extends Component {
                                 <Icon name='chevron-right' size={24} />
                             </View>
                         </Card>
-                        <Card style={{ marginBottom: 16 }}>
+                        <Card
+                            style={{ marginBottom: 16 }}
+                            onPress={() => {
+                                this.props.navigation.navigate('lista-direcciones',
+                                    {
+                                        direcciones: customer.address,
+                                        id: customer.id
+                                    });
+                            }}>
                             <View style={[Theme.style.alingHorizontal, { margin: 16, justifyContent: 'space-between' }]}>
                                 <Text style={Theme.style.titleBold}>Mi Libreta de Direcciones</Text>
                                 <Icon name='chevron-right' size={24} />
@@ -123,6 +144,32 @@ class Usuario extends Component {
 
                     </View>
                 </ScrollView>
+                <Portal>
+                    <Dialog
+                        visible={this.state.logoutDialog}
+                        dismissable={false}>
+                        <Dialog.Title >Cerrar Sesión</Dialog.Title>
+                        <Dialog.Content style={{ flexDirection: 'row' }}>
+                            <Paragraph>¿Estás seguro que quiere cerrar sesión?</Paragraph>
+                        </Dialog.Content>
+                        <Dialog.Actions>
+                            <Button
+                                onPress={() => {
+                                    this.setState({
+                                        logoutDialog: false
+                                    })
+                                }}
+                                uppercase>
+                                cancelar
+                            </Button>
+                            <Button
+                                onPress={this._logout}
+                                uppercase>
+                                cerrar sesión
+                            </Button>
+                        </Dialog.Actions>
+                    </Dialog>
+                </Portal>
             </View>
         );
     }
@@ -142,7 +189,6 @@ function InformacionBillingAndShipping({ information }) {
     )
 }
 
-
 function LabelAndValue({ label, value }) {
     return (
         <View style={Theme.style.alingHorizontal}>
@@ -151,6 +197,7 @@ function LabelAndValue({ label, value }) {
         </View>
     )
 }
+
 const mapStateToProps = state => ({
     login: state.login
 });

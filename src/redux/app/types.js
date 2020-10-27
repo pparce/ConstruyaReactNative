@@ -1,4 +1,5 @@
 export const SHOW_LOADING = 'app/SHOW_LOADING';
 export const HIDE_LOADING = 'app/HIDE_LOADING';
+export const SET_SNACK_INFO = 'app/SET_SNACK_INFO';
 export const SHOW_ERROR_CONNECTION = 'app/SHOW_ERROR_CONNECTION';
 export const HIDE_ERROR_CONNECTION = 'app/HIDE_ERROR_CONNECTION';

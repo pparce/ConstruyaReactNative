@@ -26,13 +26,14 @@ export default class Login extends Component {
     componentDidMount() {
     }
 
-    login = () => {
+    _login = () => {
         if (this.isFormValid.length) {
             this.setState({
                 error: true
             })
         } else {
             const { username, password } = this.state;
+            ReduxService.instance.getRedux().showLoading();
             ApiService.instance.post(ApiService.LOGIN, {
                 'username': username,
                 'password': password
@@ -40,17 +41,29 @@ export default class Login extends Component {
                 (response) => {
                     if (response.id) {
                         ReduxService.instance.getRedux().setLogin(response);
+                        ReduxService.instance.getRedux().setCredentials({
+                            'username': username,
+                            'password': password
+                        });
                         this.props.navigation.goBack();
                     } else {
                         this.setState({
                             snackBarVisibility: true
                         })
                     }
-                },
-                (error) => {
-                    this.setState({
-                        snackBarVisibility: true
-                    })
+                }).catch(error => {
+                    console.log(error);
+                    ReduxService.instance.getRedux().hideLoading();
+                    if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                        ReduxService.instance.getRedux().showErrorConnectionDialog({
+                            action: () => {
+                                this._login();
+                            },
+                            cancel: () => {
+                            },
+                            params: 'vista producto'
+                        });
+                    }
                 });
         }
 
@@ -117,7 +130,7 @@ export default class Login extends Component {
 
                                 uppercase='true'
                                 onPress={() => {
-                                    this.login()
+                                    this._login()
                                 }}>
                                 Entrar
                         </Button>

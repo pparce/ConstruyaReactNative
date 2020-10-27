@@ -5,7 +5,6 @@ import Theme from "../assets/styles/theme";
 
 function DialogCountry({ dialog, onDismiss }) {
     return (
-        <Portal>
             <Dialog
                 visible={dialog.show}
                 dismissable={true}
@@ -28,7 +27,6 @@ function DialogCountry({ dialog, onDismiss }) {
                         </Button>
                 </Dialog.Actions>
             </Dialog>
-        </Portal>
     );
 }
 
@@ -42,7 +40,8 @@ _getListItems = (listado, onItemClick) => {
     return item;
 }
 
-function ItemDialog({ item, onItemClick }) {
+export function ItemDialog({ item, onItemClick }) {
+    console.log(item);
     return (
         <TouchableRipple
             style={{
@@ -52,7 +51,7 @@ function ItemDialog({ item, onItemClick }) {
             onPress={() => {
                 onItemClick(item)
             }}>
-            <Text style={Theme.style.title}>{item.name}</Text>
+            <Text style={Theme.style.title}>{item.name || item.alias}</Text>
         </TouchableRipple>
     );
 }

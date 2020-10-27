@@ -15,6 +15,11 @@ const reducer = (state = INITIAL_STATE, action) => {
                 login: payload,
                 isLogin: Object.entries(payload).length ? true : false,
             };
+        case types.SET_CREDENTIALS:
+            return {
+                ...state,
+                credentials: payload,
+            };
         default:
             return state;
     }

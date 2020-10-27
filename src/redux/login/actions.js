@@ -10,6 +10,12 @@ export const setLogin = (login) => ({
     payload: login 
 });
 
+export const setCredentials = (credentials) => ({
+    type: types.SET_CREDENTIALS,
+    payload: credentials 
+});
+
+
 /* export const showSnackBar = (data) => ({
     type: types.SHOW_SNACKBAR,
     payload: true 

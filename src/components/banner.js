@@ -2,12 +2,15 @@ import React, { Component, Fragment, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { View, Image, Dimensions } from 'react-native';
 import Shimmer from './shimmer';
+import ViewPager from '@react-native-community/viewpager';
+import PaginationDot from 'react-native-animated-pagination-dot';
 
-class Slider extends Component {
+class Banner extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            currentPage: 0,
             imagenes: [
                 {
                     id: '0',
@@ -30,25 +33,46 @@ class Slider extends Component {
 
     };
 
+    _buildItems = () => {
+        let items = [];
+        for (let index = 0; index < this.state.imagenes.length; index++) {
+            items.push(
+                this._renderItem(this.state.imagenes[index])
+            );
+        }
+        return items;
+    }
+
     _renderMyKeyExtractor = (item, index) => item.id.toString();
 
-    _renderItem = ({ item }) => {
+    _renderItem = (item) => {
         return (
-            <MyListItem item={item} onPressItem={this._onPressItem} />
+            <MyListItem item={item} onPressItem={this._onPressItem}  key={item.id.toString()}/>
         );
     }
 
     render() {
         return (
             <Fragment>
-                <FlatList
-                    snapToAlignment='start'
-                    horizontal
-                    style={{ backgroundColor: '#deb887' }}
-                    data={this.state.imagenes}
-                    renderItem={this._renderItem}
-                    keyExtractor={this._renderMyKeyExtractor}
-                />
+                <ViewPager
+                    onPageSelected={(e) => {
+                        var position = e.nativeEvent.position;
+                        this.setState({ currentPage: position });
+                        // this.setState({ currentPage: position });
+                    }}
+                    style={{ height: 200 }}>
+                    {
+                        this._buildItems()
+                    }
+                </ViewPager>
+                <View style={{flex:1, alignItems: 'center', paddingTop: 8}}>
+                    <PaginationDot
+                        activeDotColor='black'
+                        curPage={this.state.currentPage}
+                        maxPage={3}
+                        sizeRatio={1.0}
+                    />
+                </View>
             </Fragment>
 
         );
@@ -77,4 +101,4 @@ function MyListItem(props) {
 }
 
 
-export default Slider;
+export default Banner;

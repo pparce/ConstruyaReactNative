@@ -78,7 +78,6 @@ export default class EditInfo extends Component {
     _getState = (id) => {
         ApiService.instance.get(ApiService.instance.buildUrlById(ApiService.PROVINCIAS, id)).then(
             response => {
-                console.log('pepe: ' + response);
                 if (response.length) {
                     this._showDialog({
                         show: true,

@@ -1,6 +1,7 @@
 export const INITIAL_STATE = {
     login: {},
-    isLogin: false
+    isLogin: false,
+    credentials: {}
     // showCart: false, 
     // showSnackBar: false,
 }

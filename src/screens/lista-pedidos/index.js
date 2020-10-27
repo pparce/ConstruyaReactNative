@@ -1,6 +1,6 @@
 
 import React, { Component, Fragment } from 'react';
-import { Appbar, Divider } from 'react-native-paper';
+import { ActivityIndicator, Appbar, Divider } from 'react-native-paper';
 import MyTheme from '../../assets/styles';
 import { Text, View } from 'react-native';
 import EmptyScreen from '../../components/empty-screen';
@@ -8,15 +8,20 @@ import ApiService from '../../services/api.service';
 import { FlatList } from 'react-native-gesture-handler';
 import ItemPedido from '../../components/item-pedidos';
 import Theme from '../../assets/styles/theme';
+import CustomBoottomSheetComponent from '../../components/custom-bottom-sheet';
+import ItemMenuDialog from '../../components/item-menu-dialog';
 
 class ListaPedidos extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             pedidos: [],
+            url: '',
             next: '',
-            count: 0
+            count: 0,
+            item: {}
         }
     }
 
@@ -25,17 +30,25 @@ class ListaPedidos extends Component {
     }
 
     _getPedidos = () => {
-        ApiService.instance.get(ApiService.ORDER_LAST).then(
+        this.setState({
+            loading: true
+        });
+        let url = this.state.next.length ? this.state.next : ApiService.ORDER_NEW;
+        ApiService.instance.getWithPaginator(url).then(
             response => {
+                console.log(response);
                 this.setState({
-                    pedidos: response.results,
+                    pedidos: [...this.state.pedidos, ...response.results],
                     next: response.next,
-                    count: response.count
+                    count: response.count,
+                    loading: false
                 })
-            }, error => {
-                console.log(error)
-            }
-        );
+            }).catch((error) => {
+                console.log(error);
+                this.setState({
+                    loading: false
+                });
+            });
     }
 
     _keyExtractor = (item, index) => item.id;
@@ -44,24 +57,45 @@ class ListaPedidos extends Component {
         this.props.navigation.navigate('vista-pedido', item.id);
     };
 
+    _onLongPressItem = (item) => {
+        this.setState({
+            item: item
+        })
+        this.bottomSheet._show();
+    }
+
     _renderMyKeyExtractor = (item, index) => item.id.toString();
 
     _renderItem = ({ item }) => {
         return (
-            <ItemPedido item={item} onPressItem={this._onPressItem} />
+            <ItemPedido item={item} onPressItem={this._onPressItem} onLongPressItem={this._onLongPressItem} />
         );
+    }
+
+    _getMorePedidos = () => {
+        if (this.state.pedidos.length < this.state.count) {
+            this._getPedidos()
+        }
     }
 
     render() {
         return (
             <View style={{ flex: 1 }}>
-                <Appbar.Header style={MyTheme.style.toolbar}>
+                <Appbar.Header style={[Theme.style.toolbar, { elevation: 0 }]}>
                     <Appbar.Action
                         icon="arrow-left"
                         onPress={() => this.props.navigation.goBack()}
                     />
                     <Appbar.Content
                         title='Lista Pedidos' />
+                    {
+                        this.state.loading &&
+                        <ActivityIndicator
+                            size='small'
+                            animating={true}
+                            color={Theme.colors.primary}
+                            style={{ marginHorizontal: 16 }} />
+                    }
                 </Appbar.Header>
                 {
                     this.state.pedidos.length
@@ -81,24 +115,42 @@ class ListaPedidos extends Component {
                                         paddingVertical: 16,
                                         backgroundColor: Theme.colors.grisClaro
                                     }]}>
-                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 16 }}>Pedido</Text>
-                                    <Text style={{ flex: 2, color: Theme.colors.black, fontSize: 16 }}>Actualización</Text>
-                                    <Text style={{ flex: 2, color: Theme.colors.black, fontSize: 16 }}>Estado</Text>
-                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 16, textAlign: 'right' }}>Monto</Text>
+                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 14 }}>Pedido</Text>
+                                    <Text style={{ flex: 2, color: Theme.colors.black, fontSize: 14 }}>Actualización</Text>
+                                    <Text style={{ flex: 2, color: Theme.colors.black, fontSize: 14 }}>Estado</Text>
+                                    <Text style={{ flex: 1, color: Theme.colors.black, fontSize: 14, textAlign: 'right' }}>Monto</Text>
                                 </View>
                                 <Divider style={{ height: 1 }} />
                             </Fragment>
                             <FlatList
-                                style={{}}
                                 data={this.state.pedidos}
                                 renderItem={this._renderItem}
                                 keyExtractor={this._renderMyKeyExtractor}
+                                onEndReachedThreshold={3}
+                                onEndReached={this._getMorePedidos}
+                                removeClippedSubviews={true}
+                                maxToRenderPerBatch={20}
                             />
                         </Fragment>
 
                         :
                         <EmptyScreen icon='cart' titulo='No hay pedidos que mostrar' />
                 }
+                <CustomBoottomSheetComponent onRef={ref => (this.bottomSheet = ref)} >
+                    <ItemMenuDialog
+                        icon='information-outline'
+                        label='Detalles'
+                        onPress={() => {
+                            this.props.navigation.navigate('vista-pedido', this.state.item.id);
+                            this.bottomSheet._dismiss();
+                        }} />
+                    <ItemMenuDialog
+                        icon='content-duplicate'
+                        label='Duplicar Pedido'
+                        onPress={() => {
+                            this.bottomSheet._dismiss();
+                        }} />
+                </CustomBoottomSheetComponent>
             </View>
         );
     }

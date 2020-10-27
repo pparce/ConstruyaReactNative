@@ -7,4 +7,8 @@ export default class Utiles {
     static _getFirstLetter(cadena) {
         return cadena.charAt(0).toUpperCase();
     }
+
+    static _redondearValorDecimal(value){
+        return Math.round(Number(value) * 100) / 100;
+    }
 }

@@ -31,7 +31,10 @@ const Theme = {
     style: StyleSheet.create({
         toolbar: {
             backgroundColor: '#ffffff',
-            marginTop: StatusBar.currentHeight
+            marginTop: StatusBar.currentHeight,
+            borderBottomWidth: 0.5,
+            elevation: 0,
+            borderBottomColor: '#616161'
         },
         container: {
             paddingHorizontal: 16,
@@ -75,6 +78,13 @@ const Theme = {
         subtitleBold: {
             fontSize: 14,
             color: '#000000',
+        },
+        frameLayout: {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
         }
     })
 };

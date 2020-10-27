@@ -1,33 +1,30 @@
 
 import React, { Fragment, Component } from 'react';
 import { Appbar, Button, Portal } from 'react-native-paper';
-import { Animated, Dimensions, ScrollView, StatusBar, Text, View } from 'react-native';
+import { Animated, BackHandler, Dimensions, Alert, ScrollView, StatusBar, Text, View, Platform } from 'react-native';
 import ListadoProductosHorizontal from '../../../components/listado-productos-horizontal';
-import Slider from '../../../components/banner';
-import MyTheme from '../../../assets/styles';
+import Banner from '../../../components/banner';
 import ApiService from '../../../services/api.service';
-import Axios from 'axios';
 import { connect } from 'react-redux';
-import ConnectionsDialogs from '../../../components/connections-dialogs';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-// import BottomSheet from 'reanimated-bottom-sheet';
-import BottomSheet from 'react-native-bottomsheet-reanimated';
-import BottomSheetBehavior from 'reanimated-bottom-sheet';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import ItemMenuDialog from '../../../components/item-menu-dialog';
-import RNBottomActionSheet from 'react-native-bottom-action-sheet';
+import BoottomSheetComponent from '../../../components/bottom-sheet';
+import Theme from '../../../assets/styles/theme';
+import ReduxService from '../../../services/redux.service';
+import DetalleDialog from '../../../components/detalle-dialog';
 
 
 
 class Inicio extends Component {
 
-    bottomSheet = React.createRef(null);
+    // bottomSheet = React.createRef(null);
     window = Dimensions.get('window');
     Screen = {
         width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
+        height: Platform.OS !== 'ios' && Dimensions.get('screen').height !== Dimensions.get('window').height && StatusBar.currentHeight > 24
+            ? Dimensions.get('screen').height
+            : Dimensions.get('window').height
     };
     snapPoints = [0, '50%'];
+    canAddFavorito = false;
 
     constructor(props) {
         super(props);
@@ -38,9 +35,11 @@ class Inicio extends Component {
             onError: false,
             opacity: new Animated.Value(0),
             isOpen: false,
-            sheetView: false
+            sheetView: false,
+            item: {},
+            detalleDialog: false,
+            showBottomSheet: false
         }
-
     }
 
     componentDidMount() {
@@ -48,87 +47,57 @@ class Inicio extends Component {
     }
 
     _getProducts = () => {
-        // this.setState({ onLoading: true });
-        Axios.all(
+        Promise.all(
             [
                 ApiService.instance.get(ApiService.PRODUCTS_MOST_SALED),
                 ApiService.instance.get(ApiService.PRODUCTS_ON_SALE)
             ]
-        ).then(Axios.spread((...response) => {
+        ).then((response) => {
             this.setState({
                 productosMasVendidos: response[0],
                 productosEnVenta: response[1],
-                onLoading: false
+                onLoading: false,
+                showBottomSheet: true
             });
-            this.setState({});
-        }))
-            .catch(error => {
-                console.log(error);
-            });
+        }).catch(error => {
+            ReduxService.instance.getRedux().hideLoading();
+            if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                ReduxService.instance.getRedux().showErrorConnectionDialog({
+                    action: () => {
+                        this._getProducts();
+                    },
+                    cancel: () => {
+                        BackHandler.exitApp();
+                    },
+                    params: 'inicio'
+                });
+            }
+        });
     }
 
-    renderContent = () => (
-        <View
-            style={{
-                backgroundColor: 'white',
-                padding: 16,
-                height: 450,
-            }}
-        >
-            <Text>Swipe down to close</Text>
-        </View>
-    );
+    _onMenuPress = (item, position) => {
+        switch (position) {
+            case 0:
+                this._addToFavorites(item)
+                break;
+            case 1:
+                this.setState({ item: item, detalleDialog: true })
+                break;
+        }
+    }
 
-    onClose = () => {
-        Animated.timing(this.state.opacity, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
-        this.bottomSheet.current.snapTo(0);
-        setTimeout(() => {
-            this.setState({ isOpen: false });
-        }, 50);
-    };
-
-    onOpen = () => {
-        this.setState({ isOpen: true });
-        this.bottomSheet.current.snapTo(2);
-        Animated.timing(this.state.opacity, {
-            toValue: 0.5,
-            duration: 250,
-            useNativeDriver: true,
-        }).start();
-    };
-
-    renderBackDrop = () => (
-        <Animated.View
-            style={{
-                opacity: this.state.opacity,
-                backgroundColor: '#000',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-            }}>
-            <TouchableOpacity
-                style={{
-                    width: this.window.width,
-                    height: this.window.height,
-                    backgroundColor: 'transparent',
-                }}
-                activeOpacity={1}
-                onPress={this.onClose}
-            />
-        </Animated.View>
-    );
+    _addToFavorites = (item) => {
+        if (item) {
+            ReduxService.instance.getRedux().addFavorites(item);
+            ReduxService.instance.getRedux().showSnackBarFavorite();
+        }
+    }
 
     render() {
         var cart = this.props.cart.cart;
         return (
-            <Fragment>
-                <Appbar.Header style={[MyTheme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
+            <View style={{ height: this.Screen.height }}>
+                <Appbar.Header style={[Theme.style.toolbar, { marginTop: StatusBar.currentHeight, elevation: 0 }]}>
                     <Appbar.Action
                         icon="menu"
                         onPress={() => this.props.navigation.openDrawer()}
@@ -138,13 +107,7 @@ class Inicio extends Component {
                         style={{ alignSelf: 'flex-end' }}
                         icon="magnify"
                         onPress={() => {
-                            // this.bottomSheet.current.snapTo(1);
-                            // this.onOpen()
-                            // this.props.navigation.navigate('buscar')
-                            // this.RBSheet.open()
-                            this.setState({
-                                sheetView: true
-                            })
+                            this.props.navigation.navigate('buscar');
                         }}
                     />
                     {
@@ -165,55 +128,36 @@ class Inicio extends Component {
                 </Appbar.Header>
 
                 <ScrollView>
-                    <Slider />
+                    <Banner />
                     <ListadoProductosHorizontal
                         navigation={this.props.navigation}
                         title='Productos en oferta'
-                        productos={this.state.productosEnVenta} />
+                        productos={this.state.productosEnVenta}
+                        onItemLongPress={(item) => {
+                            this.bottomSheet._show(item);
+                        }} />
                     <ListadoProductosHorizontal
                         title='Lo mas vendido'
-                        productos={this.state.productosMasVendidos} />
+                        productos={this.state.productosMasVendidos}
+                        onItemLongPress={(item) => {
+                            this.bottomSheet._show(item);
+                        }} />
                 </ScrollView>
-                <RNBottomActionSheet.SheetView visible={this.state.sheetView} title={"Awesome!"} theme={"light"} onSelection={(index, value) => {
-                    // value is optional
-                    console.log("selection: " + index + " " + value);
-                }}>
-                    <RNBottomActionSheet.SheetView.Item title={"Facebook"} subTitle={"Facebook Description"}  />
-                    <RNBottomActionSheet.SheetView.Item title={"Instagram"} subTitle={"Instagram Description"}  />
-                </RNBottomActionSheet.SheetView>
-                {/* <RBSheet
-                    ref={ref => {
-                        this.RBSheet = ref;
-                    }}
-                    animationType='fade'
-                    height={300}
-                    duration={250}
-                    customStyles={{
-                        container: {
-                            justifyContent: "center",
-                            alignItems: "center"
-                        }
-                    }}
-                >
-                    <ItemMenuDialog
-                        icon='heart-outline'
-                        label='Agregar a favorito'
-                        onPress={() => {
-                            setOpciones(false);
-                            alert('click')
-                        }} />
-                    <ItemMenuDialog
-                        icon='information-outline'
-                        label='Detalles'
-                        onPress={() => {
-                            setOpciones(false);
-                            alert('click')
-                        }} />
-                </RBSheet> */}
-            </Fragment>
+
+                {
+                    this.state.showBottomSheet &&
+                    <BoottomSheetComponent onRef={ref => (this.bottomSheet = ref)} onMenuPress={this._onMenuPress} />
+                }
+
+                <DetalleDialog
+                    visible={this.state.detalleDialog}
+                    item={this.state.item}
+                    onDismiss={() => {
+                        this.setState({ detalleDialog: false })
+                    }} />
+            </View>
         );
     }
-
 
 }
 

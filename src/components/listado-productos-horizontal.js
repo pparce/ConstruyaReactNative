@@ -1,17 +1,14 @@
 import React, { Component, Fragment, useState } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import ItemList from './itemList';
-import { Dialog, Portal, Title } from 'react-native-paper';
+import { Title } from 'react-native-paper';
 import { showLoading, hideLoading } from '../redux/app/actions';
 import { connect } from 'react-redux';
 import CarroService from '../services/carro.service';
 import ApiService from '../services/api.service';
-import RNBottomActionSheet from 'react-native-bottom-action-sheet';
-import Icon from 'react-native-vector-icons';
-import BottomSheetProducto from './bottom-sheet-producto';
+import ReduxService from '../services/redux.service';
 
 class ListadoProductosHorizontal extends Component {
-    bottomSheet = React.createRef(null);
     constructor(props) {
         var ls = [];
         ls.length
@@ -37,20 +34,26 @@ class ListadoProductosHorizontal extends Component {
             }, error => {
 
             }
-        );
+        ).catch(error => {
+            ReduxService.instance.getRedux().hideLoading();
+            if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                ReduxService.instance.getRedux().showErrorConnectionDialog({
+                    action: () => {
+                        this._onPressItem();
+                    },
+                    cancel: () => {
+                    },
+                    params: item
+                });
+            }
+        });
     };
-
-    _onLongPress = (item) => {
-        this.setState({
-            sheetView: true
-        })
-    }
 
     _renderMyKeyExtractor = (item, index) => item.id.toString();
 
     _renderItem = ({ item }) => {
         return (
-            <ItemList item={item} onPressItem={this._onPressItem} onLongPress={this._onLongPress} />
+            <ItemList item={item} onPressItem={this.props.onItemPress} onLongPress={this.props.onItemLongPress} />
         );
     }
 
@@ -62,7 +65,8 @@ class ListadoProductosHorizontal extends Component {
                     style={{
                         marginHorizontal: 16,
                         marginTop: 16,
-                        alignSelf: 'center'
+                        alignSelf: 'center',
+                        display: this.props.productos.length ? 'flex' : 'none'
                     }}>
                     {this.state.title}
                 </Title>
@@ -73,11 +77,6 @@ class ListadoProductosHorizontal extends Component {
                     renderItem={this._renderItem}
                     keyExtractor={this._renderMyKeyExtractor}
                 />
-                <BottomSheetProducto
-                    visible={this.state.sheetView}
-                    onSelection={(index, value) => {
-                        alert(index)
-                    }} />
             </Fragment>
 
         );

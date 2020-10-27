@@ -3,13 +3,11 @@ import { Text, View, StyleSheet } from 'react-native';
 import MyTheme from '../assets/styles';
 import { Appbar } from 'react-native-paper';
 import { ThemeProvider } from '@react-navigation/native';
+import Theme from '../assets/styles/theme';
 
 function StepperIndicator({ steppSelected = 0, titulos = ['Productos', 'Envío', 'Pago'] }) {
     return (
-        <Appbar.Header style={{
-            backgroundColor: '#ffffff',
-            height: 72
-        }}>
+        <Appbar.Header style={[Theme.style.toolbar,{marginTop: 8}]}>
             <View style={style.container}>
                 {
                     buldSteps(steppSelected, titulos)
@@ -36,7 +34,7 @@ const buldSteps = (steppSelected, titulos) => {
                         style={[
                             index <= steppSelected ? style.labelSelected : style.label
                             , steppSelected == index && { fontWeight: 'bold' }
-                        ]}>{titulos[index]}</Text> 
+                        ]}>{titulos[index]}</Text>
                 </View>
                 {
                     index < titulos.length - 1 && <View style={style.linea}></View>
@@ -54,7 +52,8 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignContent: 'center',
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingBottom: 16,
     },
     indicador: {
         flexDirection: 'column',

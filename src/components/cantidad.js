@@ -4,8 +4,8 @@ import MyTheme from '../assets/styles';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableRipple } from 'react-native-paper';
 
-function Cantidad({onChange = ()=>{}, style}) {
-    const [cantidad, setCantidad] = useState('1');
+function Cantidad({ onChange = () => { }, style, qty = 1 }) {
+    const [cantidad, setCantidad] = useState(qty + '');
     onChange(cantidad);
     return (
         <View style={style}>
@@ -36,6 +36,7 @@ function Cantidad({onChange = ()=>{}, style}) {
                     <Icon name='minus' size={24} style={{ alignSelf: 'center' }} />
                 </TouchableRipple>
                 <TextInput
+                    selectTextOnFocus
                     keyboardType='numeric'
                     value={cantidad}
                     onChangeText={(value) => {

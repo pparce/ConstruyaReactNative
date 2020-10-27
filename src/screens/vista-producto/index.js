@@ -2,18 +2,23 @@
 import React, { Component, Fragment } from 'react';
 import { Appbar, Divider, Title, Subheading, Button } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Image, View, Text } from 'react-native';
+import { Image, View, Text, BackHandler } from 'react-native';
 import MyTheme from '../../assets/styles';
 import Cantidad from '../../components/cantidad';
 import { StatusBar } from 'react-native';
 import ShimmerPlaceHolder from '../../components/shimmer-placeholder';
 import ApiService from '../../services/api.service';
 import ListadoProductosHorizontal from '../../components/listado-productos-horizontal';
+import ReduxService from '../../services/redux.service';
+import Theme from '../../assets/styles/theme';
+import CarroService from '../../services/carro.service';
+import { Slider } from '../../components/slider';
 
 export default class VistaProducto extends Component {
 
     constructor(props) {
         super(props);
+        var cantidad = 1;
         this.state = {
             id: this.props.route.params.item.id,
             title: this.props.route.params.item.name,
@@ -21,61 +26,102 @@ export default class VistaProducto extends Component {
             imagen: this.props.route.params.urlImagen,
             onLoadData: true,
             imageShimmer: false,
-            productosRelacionados: []
+            productosRelacionados: [],
+            isFavorite: this._isFavorite()
         }
-        this._getData(ApiService.instance.buildUrlById(ApiService.PRODUCTS_RELATED, this.state.id));
+        console.log(this._isFavorite());
+        this._getData();
     }
 
     _onImageLoaded = () => {
         this.setState({ onLoadData: true })
     }
 
-    _getData = (url) => {
-        ApiService.instance.get(url).then(
-            (response) => {
-                
-                this.setState({ productosRelacionados: response });
-            },
-            (error) => {
+    _getData = () => {
+        let urlProducto = ApiService.instance.buildUrlById(ApiService.PRODUCTS_BY_ID, this.state.id);
+        let url = ApiService.instance.buildUrlById(ApiService.PRODUCTS_RELATED, this.state.id);
+        Promise.all(
+            [
+                ApiService.instance.get(urlProducto),
+                ApiService.instance.get(url)
+            ]
+        ).then((response) => {
+            this.setState({
+                item: response[0],
+                productosRelacionados: response[1]
             });
+        }).catch(error => {
+            ReduxService.instance.getRedux().hideLoading();
+            if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                ReduxService.instance.getRedux().showErrorConnectionDialog({
+                    action: () => {
+                        this._getData();
+                    },
+                    cancel: () => {
+                        this.props.navigation.goBack();
+                    },
+                    params: 'vista producto'
+                });
+            }
+        });
+    }
+
+    _addToFavorites = () => {
+        if (this._isFavorite()) {
+            ReduxService.instance.getRedux().removeFavorites(this.state.id);
+            this.setState({
+                isFavorite: false
+            });
+        } else {
+            ReduxService.instance.getRedux().addFavorites(this.state.item);
+            ReduxService.instance.getRedux().showSnackBarFavorite();
+            this.setState({
+                isFavorite: true
+            });
+        }
+    }
+
+    _isFavorite = () => {
+        if (ReduxService.instance.getRedux().getFavorites.map(
+            (item) => { return item.id }).indexOf(this.props.route.params.item.id) != -1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     render() {
         var item = this.state.item;
         var imageShimmer = this.state.imageShimmer;
         var onLoadData = this.state.onLoadData;
+        console.log(item);
         return (
             <Fragment>
-                <Appbar.Header style={[MyTheme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
+                <Appbar.Header style={[Theme.style.toolbar, { marginTop: StatusBar.currentHeight }]}>
                     <Appbar.Action
                         icon="arrow-left"
                         onPress={() => this.props.navigation.goBack()}
                     />
                     <Appbar.Content title={this.state.title} />
+                    <Appbar.Action
+                        icon={this.state.isFavorite ? 'heart' : 'heart-outline'}
+                        onPress={this._addToFavorites}
+                    />
                 </Appbar.Header>
-                <ScrollView style={{  }}>
-                    <ShimmerPlaceHolder style={{ display: onLoadData ? 'flex' : 'none' }} autoRun={onLoadData} />
-
-                    <View style={{ display: onLoadData ? 'none' : 'flex', flex: 1, paddingBottom: 16 }}>
-                        <Image
+                <ScrollView style={{}}>
+                    <View style={{ flex: 1, paddingBottom: 16 }}>
+                        <Slider
+                            images={item.product_image_gallery}
                             onLoad={() => {
                                 this.setState({ onLoadData: false });
-                            }}
-                            resizeMode='cover'
-                            style={{
-                                width: '100%',
-                                height: 300,
-                                borderTopLeftRadius: 5,
-                                borderTopRightRadius: 5
-                            }}
-                            source={{ uri: this.state.imagen }} />
-                        <Divider style={{ height: 1 }} />
-                        <View style={MyTheme.style.container}>
-                            <Title>{this.state.title}</Title>
+                            }} />
+
+                        <View style={Theme.style.container}>
+                            <Title>{item.name}</Title>
                             <Subheading>{item.description}</Subheading>
-                            <View style={[MyTheme.style.alingHorizontal, { alignItems: 'center', marginTop: 16 }]}>
+                            <View style={[Theme.style.alingHorizontal, { alignItems: 'center', marginTop: 16 }]}>
                                 <Text
-                                    style={{ fontSize: 20, marginRight: 16, color: MyTheme.colors.primary, }}
+                                    style={{ fontSize: 20, marginRight: 16, color: Theme.colors.primary, }}
                                     numberOfLines={2}>
                                     ${item.product_pricing.real_price}
                                 </Text>
@@ -84,7 +130,10 @@ export default class VistaProducto extends Component {
                                     numberOfLines={2}>
                                     ${item.product_pricing.price}
                                 </Text>
-                                <Cantidad style={{ flex: 1, }} />
+                                <Cantidad
+                                    onChange={(value) => {
+                                        this.cantidad = value;
+                                    }} style={{ flex: 1, }} />
                             </View>
                             <Button
                                 style={{ marginTop: 16 }}
@@ -93,7 +142,7 @@ export default class VistaProducto extends Component {
                                 uppercase='true'
                                 icon="cart"
                                 onPress={() => {
-                                    this.props.navigation.navigate('registro');
+                                    CarroService.instance.addItemToCart(this.props.route.params.item, parseInt(this.cantidad));
                                 }}>
                                 Agregar al Carrito
                                 </Button>

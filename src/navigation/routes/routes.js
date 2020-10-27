@@ -11,7 +11,10 @@ import Favoritos from '../../screens/favoritos';
 import EditInfo from '../../screens/edit-info';
 import EditInformacionAcceso from '../../screens/edit-info-acceso';
 import ListaPedidos from '../../screens/lista-pedidos';
+import ListaDirecciones from '../../screens/lista-direcciones';
 import VistaPedido from '../../screens/vista-pedido';
+import EditDireccion from '../../screens/edit-direccion';
+import AddDireccion from '../../screens/add-direccion';
 
 export default {
     Splash,
@@ -27,5 +30,8 @@ export default {
     EditInfo,
     EditInformacionAcceso,
     ListaPedidos,
-    VistaPedido
+    ListaDirecciones,
+    VistaPedido,
+    EditDireccion,
+    AddDireccion,
 }

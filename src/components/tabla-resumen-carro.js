@@ -1,23 +1,24 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Theme from '../assets/styles/theme';
+import Utiles from '../utiles/funciones_utiles';
 
 function TablaResumenCarro({ cart }) {
     return (
         <View style={style.container}>
-            <ItemInfo label='TOTAL PARCIAL' value={cart.subtotal} />
-            <ItemInfo label='DESCUENTO' value={cart.subtotal} />
-            <ItemInfo label='IMPUESTO' value={cart.subtotal} />
-            <ItemInfo label='TOTAL' value={cart.subtotal} estilo={{ backgroundColor: Theme.colors.grisClaro }} />
+            <ItemInfo label='SUBTOTAL' value={Utiles._redondearValorDecimal(cart.subtotal)} />
+            <ItemInfo label='DESCUENTO' value={Utiles._redondearValorDecimal(cart.discount)} />
+            <ItemInfo label='ENVIO' value={Utiles._redondearValorDecimal(cart.shipping)} />
+            <ItemInfo label='IVA' value={Utiles._redondearValorDecimal(cart.subtotal)} estilo={{ backgroundColor: Theme.colors.grisClaro }} />
         </View>
     );
 }
 
 function ItemInfo({ estilo, label, value = '$00.00' }) {
     return (
-        <View style={[style.item,  estilo ]}>
+        <View style={[style.item, estilo]}>
             <Text style={style.label}>{label}</Text>
-            <Text style={style.label}>{value}</Text>
+            <Text style={style.label}>${value}</Text>
         </View>
     );
 }

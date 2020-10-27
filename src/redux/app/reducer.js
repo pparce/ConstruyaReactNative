@@ -2,7 +2,7 @@ import * as types from './types';
 import { INITIAL_STATE } from './initialState';
 
 const reducer = (state = INITIAL_STATE, action) => {
-    const { payload, type } = action;
+    const { payload, type , retryAction} = action;
     switch (type) {
         case types.SHOW_LOADING:
             return {
@@ -14,16 +14,21 @@ const reducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 showLoading: payload,
             };
+        case types.SET_SNACK_INFO:
+            return {
+                ...state,
+                snackInfo: payload,
+            };
         case types.SHOW_ERROR_CONNECTION:
             return {
                 ...state,
-                showErrorConnectionDialog: payload,
-                retryAction: action.retryAction
+                showErrorConnectionDialog: true,
+                retryAction: payload
             };
         case types.HIDE_ERROR_CONNECTION:
             return {
                 ...state,
-                showErrorConnectionDialog: payload,
+                showErrorConnectionDialog: false,
             };
         default:
             return state;

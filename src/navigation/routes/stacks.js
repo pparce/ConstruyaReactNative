@@ -1,10 +1,21 @@
 import React from 'react';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets, TransitionSpecs } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Route from './routes'
 import { navigationRef } from '../root-navigation';
 
 const Stack = createStackNavigator();
+const config = {
+    animation: 'spring',
+    config: {
+        stiffness: 1000,
+        damping: 500,
+        mass: 3,
+        overshootClamping: true,
+        restDisplacementThreshold: 0.01,
+        restSpeedThreshold: 0.01,
+    },
+};
 
 function AppStack() {
     return (
@@ -20,6 +31,7 @@ function AppStack() {
                     component={Route.Splash} />
                 <Stack.Screen
                     name="principal"
+                    key='principal'
                     component={Route.Principal}
                     options={{
                         drawerLockMode: 'locked-closed'
@@ -44,6 +56,18 @@ function AppStack() {
                 <Stack.Screen
                     name="lista-pedidos"
                     component={Route.ListaPedidos}
+                />
+                <Stack.Screen
+                    name="lista-direcciones"
+                    component={Route.ListaDirecciones}
+                />
+                <Stack.Screen
+                    name="edit-direccion"
+                    component={Route.EditDireccion}
+                />
+                <Stack.Screen
+                    name="add-direccion"
+                    component={Route.AddDireccion}
                 />
                 <Stack.Screen
                     name="vista-pedido"

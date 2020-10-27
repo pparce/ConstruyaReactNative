@@ -145,15 +145,24 @@ export default class Registro extends Component {
             response => {
                 if (!response.error) {
                     ReduxService.instance.getRedux().setLogin(response);
-                    this.props.navigation.goBack();
+                    this.props.navigation.popToTop();
                 } else {
                     console.log(response.error);
                 }
-            },
-            error => {
-                console.log(error);
-            }
-        );
+            }).catch(error => {
+                ReduxService.instance.getRedux().hideLoading();
+                if (!ReduxService.instance.getRedux().app.showErrorConnectionDialog) {
+                    ReduxService.instance.getRedux().showErrorConnectionDialog({
+                        action: () => {
+                            this._registrarse();
+                        },
+                        cancel: () => {
+                            this.props.navigation.goBack();
+                        },
+                        params: 'vista producto'
+                    });
+                }
+            });
     }
 
     _buildJSON = () => {
@@ -242,7 +251,7 @@ export default class Registro extends Component {
                             required
                         />
                         <CustomInput
-                            
+                        
                             label='Contraseña'
                             secureTextEntry
                             value={contrasena}

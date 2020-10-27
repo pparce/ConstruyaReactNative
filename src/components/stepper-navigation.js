@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
 import theme from '../assets/styles/theme';
 
-function StepperNavigation({ currentPage, steppers = [], next, back, end }) {
+function StepperNavigation({ currentPage, steppers = [], next, back, end, disabledNext = false }) {
     var isEnd = currentPage === steppers.length - 1;
     return (
         <View style={style.container}>
@@ -21,7 +21,8 @@ function StepperNavigation({ currentPage, steppers = [], next, back, end }) {
                         style={style.button}
                         uppercase
                         onPress={isEnd ? end : next}
-                        mode='text'>
+                        mode='text'
+                        disabled={disabledNext}>
                         Siguiente
                     </Button>
                     :

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { View, BackHandler, StatusBar, Image, Text } from 'react-native';
+import React, { Component, Fragment } from 'react';
+import { View, BackHandler, StatusBar, Image, Text, Dimensions, Platform } from 'react-native';
 import Inicio from './fragments/inicio';
 import Categorias from './fragments/categorias';
 import { Snackbar } from 'react-native-paper';
@@ -7,14 +7,22 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import DrawerHeader from '../../components/drawer-header'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Theme from '../../assets/styles/theme';
+import CookieManager from '@react-native-community/cookies';
 
 export default class Principal extends Component {
-
+    window = Dimensions.get('window');
+    Screen = {
+        width: Dimensions.get('window').width,
+        height: Platform.OS !== 'ios' && Dimensions.get('screen').height !== Dimensions.get('window').height && StatusBar.currentHeight > 24
+            ? Dimensions.get('screen').height
+            : Dimensions.get('window').height
+    };
     constructor(props) {
         super(props);
         this.state = {
             snackBarVisibility: false,
             opacityDrawer: 0,
+            showViews: true
         };
         this.backHandler = null;
         this.blurEvents = null;
@@ -26,9 +34,9 @@ export default class Principal extends Component {
     componentDidMount() {
         setTimeout(() => {
             this.setState({
-                opacityDrawer: 1
+                opacityDrawer: 1,
             })
-        }, 2000);
+        }, 1000);
         this.blurEvents = this.props.navigation.addListener('blur', e => {
             // Prevent default action
             if (this.backHandler)
@@ -63,49 +71,51 @@ export default class Principal extends Component {
     render() {
         const Drawer = createDrawerNavigator();
         return (
-            <View style={{ flex: 1 }}>
+            <Fragment>
                 <StatusBar backgroundColor='rgba(0,0,0,0)' barStyle='dark-content' translucent />
-                <Drawer.Navigator
-                    drawerType='front'
-                    drawerContent={(props) => <DrawerHeader {...props} />}
-                    initialRouteName='inicio'
-                    drawerStyle={{
-                        opacity: this.state.opacityDrawer
-                    }}
-                    drawerContentOptions={{
-                        activeBackgroundColor: Theme.colors.primary,
-                        activeTintColor: '#ffffff',
-                    }}>
-                    <Drawer.Screen
-                        name='inicio'
-                        component={Inicio}
-                        options={{
-                            drawerIcon: ({ focused }) => (
-                                <Icon name='home' size={24} color={focused ? Theme.colors.white : Theme.colors.black} />
-                            ),
-                            drawerLabel: ({ focused }) => (
-                                <Text style={focused ? { color: Theme.colors.white } : { color: Theme.colors.black }}>Inicio</Text>
-                            ),
-                        }} />
-                    <Drawer.Screen
-                        name='Categorias'
-                        component={Categorias}
-                        options={{
-                            drawerIcon: ({ focused, size }) => (
-                                <Icon name='shopping' size={24} color={focused ? Theme.colors.white : Theme.colors.black} />
-                            ),
-                            drawerLabel: ({ color, focused }) => (
-                                <Text style={focused ? { color: Theme.colors.white } : { color: Theme.colors.black }}>Categorias</Text>
-                            )
-                        }} />
-                </Drawer.Navigator>
-                <Snackbar
-                    onDismiss={this.onDismmisSnackBar}
-                    duration={2000}
-                    visible={this.state.snackBarVisibility}>
-                    Presione una vez más para cerrar
+                <View style={{ opacity: this.state.opacityDrawer, flex: 1 }}>
+                    <Drawer.Navigator
+                        drawerType='front'
+                        drawerContent={(props) => <DrawerHeader {...props} />}
+                        initialRouteName='inicio'
+                        drawerStyle={{
+                            opacity: this.state.opacityDrawer
+                        }}
+                        drawerContentOptions={{
+                            activeBackgroundColor: Theme.colors.primary,
+                            activeTintColor: '#ffffff',
+                        }}>
+                        <Drawer.Screen
+                            name='inicio'
+                            component={Inicio}
+                            options={{
+                                drawerIcon: ({ focused }) => (
+                                    <Icon name='home' size={24} color={focused ? Theme.colors.white : Theme.colors.black} />
+                                ),
+                                drawerLabel: ({ focused }) => (
+                                    <Text style={focused ? { color: Theme.colors.white } : { color: Theme.colors.black }}>Inicio</Text>
+                                ),
+                            }} />
+                        <Drawer.Screen
+                            name='Categorias'
+                            component={Categorias}
+                            options={{
+                                drawerIcon: ({ focused, size }) => (
+                                    <Icon name='shopping' size={24} color={focused ? Theme.colors.white : Theme.colors.black} />
+                                ),
+                                drawerLabel: ({ color, focused }) => (
+                                    <Text style={focused ? { color: Theme.colors.white } : { color: Theme.colors.black }}>Categorias</Text>
+                                )
+                            }} />
+                    </Drawer.Navigator>
+                    <Snackbar
+                        onDismiss={this.onDismmisSnackBar}
+                        duration={2000}
+                        visible={this.state.snackBarVisibility}>
+                        Presione una vez más para cerrar
                     </Snackbar>
-            </View>
+                </View>
+            </Fragment>
         );
     }
 }

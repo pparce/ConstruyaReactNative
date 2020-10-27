@@ -24,11 +24,11 @@ class ListadoProductosVertical extends Component {
         CarroService.instance.addItemToCart(item, 1);
     };
 
-    _renderMyKeyExtractor = (item, index) => item.id.toString();
+    _renderMyKeyExtractor = (item, index) => index.toString();
 
     _renderItem = ({ item }) => {
         return (
-            <ItemList item={item} onPressItem={this._onPressItem} />
+            <ItemList item={item} onPressItem={this._onPressItem} onLongPress={this.props.onItemLongPress}/>
         );
     }
 
@@ -48,6 +48,10 @@ class ListadoProductosVertical extends Component {
                             data={this.props.productos}
                             renderItem={this._renderItem}
                             keyExtractor={this._renderMyKeyExtractor}
+                            onEndReachedThreshold={3}
+                            onEndReached={this.props.onScrollEnd}
+                            removeClippedSubviews={true}
+                            maxToRenderPerBatch={10}
                         />}
             </Fragment>
 

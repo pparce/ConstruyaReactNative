@@ -22,6 +22,8 @@ target 'ConstruyaReact' do
 
   pod 'RNBottomActionSheet', :path => '../node_modules/react-native-bottom-action-sheet'
 
+  pod 'react-native-cookies', :path => '../node_modules/@react-native-community/cookies'
+
   target 'ConstruyaReactTests' do
     inherit! :complete
     # Pods for testing
