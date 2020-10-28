@@ -2,13 +2,10 @@
 import React, { Component, Fragment } from 'react';
 import { Appbar } from 'react-native-paper';
 import ListadoProductosVertical from '../../components/listado-productos-vertical';
-import MyTheme from '../../assets/styles';
 import { Dimensions, Platform, StatusBar, View } from 'react-native';
 import ApiService from '../../services/api.service';
 import { connect } from 'react-redux';
 import { hideLoading, showErrorConnectionDialog, showLoading } from '../../redux/app/actions';
-import ErrorConnectionDialog from '../../components/error-connection-dialog';
-import LoadingDialog from '../../components/loading-dialog';
 import ConnectionsDialogs from '../../components/connections-dialogs';
 import ReduxService from '../../services/redux.service';
 import BoottomSheetComponent from '../../components/bottom-sheet';

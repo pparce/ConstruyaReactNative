@@ -15,10 +15,11 @@ export class CarroService {
             items: [],
             total: 0,
             subtotal: 0,
-            canal: 8,
+            canal: 'STORE',
             discount: 0,
             channel_references: [],
-            check_price: 0
+            check_price: 0,
+            facturacion: "CONSUMIDOR_FINAL"
         }
         if (ReduxService.instance.getRedux().cart.cart.items) {
             this.cart = ReduxService.instance.getRedux().cart.cart;
@@ -38,11 +39,12 @@ export class CarroService {
             items: [],
             total: 0,
             subtotal: 0,
-            canal: 8,
+            canal: 'STORE',
             discount: 0,
             shipping: 0,
             channel_references: [],
-            check_price: 0
+            check_price: 0,
+            facturacion: "CONSUMIDOR_FINAL"
         }
     }
 

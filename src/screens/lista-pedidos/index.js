@@ -2,7 +2,7 @@
 import React, { Component, Fragment } from 'react';
 import { ActivityIndicator, Appbar, Divider } from 'react-native-paper';
 import MyTheme from '../../assets/styles';
-import { Text, View } from 'react-native';
+import { Dimensions, Platform, StatusBar, Text, View } from 'react-native';
 import EmptyScreen from '../../components/empty-screen';
 import ApiService from '../../services/api.service';
 import { FlatList } from 'react-native-gesture-handler';
@@ -12,6 +12,13 @@ import CustomBoottomSheetComponent from '../../components/custom-bottom-sheet';
 import ItemMenuDialog from '../../components/item-menu-dialog';
 
 class ListaPedidos extends Component {
+    window = Dimensions.get('window');
+    Screen = {
+        width: Dimensions.get('window').width,
+        height: Platform.OS !== 'ios' && Dimensions.get('screen').height !== Dimensions.get('window').height && StatusBar.currentHeight > 24
+            ? Dimensions.get('screen').height
+            : Dimensions.get('window').height
+    };
 
     constructor(props) {
         super(props);

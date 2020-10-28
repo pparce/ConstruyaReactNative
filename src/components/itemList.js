@@ -12,10 +12,11 @@ import ItemMenuDialog from './item-menu-dialog';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import RNBottomActionSheet from 'react-native-bottom-action-sheet';
 import ReduxService from '../services/redux.service';
+import OpcionesProducto from './opciones-producto';
 
 
 function ItemList(props) {
-    var item = props.item;
+    const [item, setItem] = useState(props.item);
     const [dialog, setDialog] = useState(false);
     const [opciones, setOpciones] = useState(false);
     const [response, setResponse] = useState();
@@ -32,6 +33,7 @@ function ItemList(props) {
         ApiService.instance.get(url).then(
             response => {
                 if (response.id) {
+                    console.log(item);
                     setDialog(true);
                     setResponse(response);
                 }
@@ -51,7 +53,6 @@ function ItemList(props) {
                 }
             });
     };
-
     return (
         <View>
             <Card
@@ -132,6 +133,7 @@ function ItemList(props) {
                     <Dialog.Title>{item.name}</Dialog.Title>
                     <Dialog.Content>
                         <Paragraph >{item.description}</Paragraph>
+                        {/* <OpcionesProducto producto={response} /> */}
                         <View style={[Theme.style.alingHorizontal, { alignItems: 'center', marginTop: 16 }]}>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text

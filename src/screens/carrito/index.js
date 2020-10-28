@@ -105,7 +105,9 @@ class Carrito extends Component {
             create_user: login.customer.user.id,
             customer: login.customer.id,
             update_user: login.customer.user.id,
+            tenant: '12',
             order: {
+                ...cart,
                 customer: login.customer.id,
                 canal: cart.canal,
                 channel_references: [],
