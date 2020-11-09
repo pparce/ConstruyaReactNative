@@ -3,7 +3,7 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 
 platform :ios, '10.0'
 
-target 'ConstruyaReact' do
+target 'ConstruyaalCosto' do
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
@@ -24,7 +24,7 @@ target 'ConstruyaReact' do
 
   pod 'react-native-cookies', :path => '../node_modules/@react-native-community/cookies'
 
-  target 'ConstruyaReactTests' do
+  target 'ConstruyaalCostoTests' do
     inherit! :complete
     # Pods for testing
   end
@@ -39,10 +39,10 @@ target 'ConstruyaReact' do
   end
 end
 
-target 'ConstruyaReact-tvOS' do
-  # Pods for ConstruyaReact-tvOS
+target 'ConstruyaalCosto-tvOS' do
+  # Pods for ConstruyaalCosto-tvOS
 
-  target 'ConstruyaReact-tvOSTests' do
+  target 'ConstruyaalCosto-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

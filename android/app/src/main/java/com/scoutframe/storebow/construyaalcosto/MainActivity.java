@@ -1,4 +1,4 @@
-package com.construyareact;
+package com.scoutframe.storebow.construyaalcosto;
 
 import android.widget.Toast;
 
@@ -12,6 +12,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "ConstruyaReact";
+    return "ConstruyaalCosto";
   }
 }

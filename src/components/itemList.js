@@ -133,7 +133,11 @@ function ItemList(props) {
                     <Dialog.Title>{item.name}</Dialog.Title>
                     <Dialog.Content>
                         <Paragraph >{item.description}</Paragraph>
-                        {/* <OpcionesProducto producto={response} /> */}
+                        <OpcionesProducto
+                            producto={response}
+                            onChangeOptions={(opciones) => {
+                                setOpciones(opciones)
+                            }} />
                         <View style={[Theme.style.alingHorizontal, { alignItems: 'center', marginTop: 16 }]}>
                             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <Text
@@ -165,7 +169,7 @@ function ItemList(props) {
                         <Button
                             onPress={() => {
                                 setDialog(false);
-                                CarroService.instance.addItemToCart(response, parseInt(cantidad));
+                                CarroService.instance.addItemToCart(response, parseInt(cantidad), opciones);
                             }}
                             uppercase>
                             Agregar

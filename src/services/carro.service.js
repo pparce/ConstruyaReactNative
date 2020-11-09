@@ -1,5 +1,4 @@
-import AppView from "../App-View";
-import { store } from "../redux/store";
+
 import Utiles from "../utiles/funciones_utiles";
 import ReduxService from "./redux.service";
 

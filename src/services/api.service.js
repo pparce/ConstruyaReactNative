@@ -2,8 +2,6 @@ import CookieManager from '@react-native-community/cookies';
 import Axios from 'axios';
 import { Service } from 'axios-middleware';
 import { Keyboard } from 'react-native';
-import { connect } from 'react-redux';
-import { showLoading, hideLoading } from '../redux/app/actions';
 import ReduxService from './redux.service';
 
 
@@ -12,9 +10,9 @@ let axio = null;
 const CancelToken = Axios.CancelToken;
 const source = CancelToken.source();
 
-const baseUrl = 'http://api.storebow.scoutframe.com/api/v1.0/';
+// const baseUrl = 'http://api.storebow.scoutframe.com/api/v1.0/';
+const baseUrl = 'http://192.168.43.228:5000/';
 // const baseUrl = 'http://10.0.2.2:5000/';
-// const baseUrl = 'http://192.168.43.228:5000/';
 export const onlineBAseUrl = 'http://api.storebow.scoutframe.com/api/v1.0/';
 const header = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -64,12 +62,12 @@ class ApiService {
         this.onlineBAseUrl = onlineBAseUrl;
         this.axioConfig = Axios.create({
             baseURL: this.baseUrl,
-            timeout: 5000,
+            timeout: 10000,
             headers: header,
         });
         this.axioConfigPaginator = Axios.create({
             baseURL: this.baseUrl,
-            timeout: 5000,
+            timeout: 10000,
             headers: header,
         });
 
@@ -207,16 +205,16 @@ class Middleware {
     }
 
     onRequest(config) {
-        Keyboard.dismiss();
-        let login = ReduxService.instance.getRedux().login;
-        if (login.isLogin) {
-            config.headers = {
-                ...config.headers,
-                Authorization: ('JWT ' + login.login.token),
-                'X-User': login.login.id
-            }
-        }
         if (config.url != 'http://api.storebow.scoutframe.com/api/v1.0/auth/login/') {
+            Keyboard.dismiss();
+            let login = ReduxService.instance.getRedux().login;
+            if (login.isLogin) {
+                config.headers = {
+                    ...config.headers,
+                    Authorization: ('JWT ' + login.login.token),
+                    'X-User': login.login.id
+                }
+            }
             ReduxService.instance.getRedux().showLoading();
         }
         this.peticiones.push(config);
