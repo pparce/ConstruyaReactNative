@@ -20,7 +20,7 @@ class ListadoProductosCarrito extends Component {
         alert(item.name);
     };
 
-    _renderMyKeyExtractor = (item, index) => item.id.toString();
+    _renderMyKeyExtractor = (item, index) => index + '';
 
     _renderItem = ({ item }) => {
         return (

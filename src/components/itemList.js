@@ -170,6 +170,7 @@ function ItemList(props) {
                             onPress={() => {
                                 setDialog(false);
                                 CarroService.instance.addItemToCart(response, parseInt(cantidad), opciones);
+                                setOpciones(false);
                             }}
                             uppercase>
                             Agregar

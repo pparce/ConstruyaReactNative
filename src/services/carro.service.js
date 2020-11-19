@@ -62,8 +62,10 @@ export class CarroService {
     }
 
     addItemToCart(producto, cantidad, opciones = null) {
-        if (this.isAdded(producto.id)) {
-            this.buildItemAdded(producto, cantidad);
+        let position = this.isAdded(producto.id, opciones);
+        if (position != -1) {
+            console.log(position);
+            this.buildItemAdded(position, producto, cantidad, opciones);
         } else {
             this.cart.items.push(this.buildItem(producto, cantidad, opciones));
         }
@@ -84,12 +86,38 @@ export class CarroService {
         return this.cart.items.length;
     }
 
-    isAdded(id) {
-        return this.cart.items.map((item) => { return item.id }).includes(id);
+    isAdded(id, opciones) {
+        let position = -1;
+        for (let index = 0; index < this.cart.items.length; index++) {
+            let item = this.cart.items[index];
+            if (item.id == id && JSON.stringify(item.options) == JSON.stringify(opciones)) {
+                position = index;
+                break;
+            }
+        }
+        return position;
+        /*  if (this.cart.items.map((item) => { return item.id }).includes(id)) {
+             if (opciones) {
+                 console.log('llego');
+                 return this.cart.items.map((item) => { return JSON.stringify(item.options) }) == JSON.stringify(opciones);
+             } else {
+                 return true;
+             }
+         } else {
+             return false;
+         } */
     }
 
-    getItemPositionById(id = 0) {
-        return this.cart.items.map(function (item) { return item.id; }).indexOf(id);
+    getItemPosition(id = 0, opciones) {
+        let position = 0;
+        for (let index = 0; index < this.cart.items.length; index++) {
+            let item = this.cart.items[index];
+            if (item.id == id && JSON.stringify(item.options) == JSON.stringify(opciones)) {
+                position = index;
+                break;
+            }
+        }
+        return position;
     }
 
     buildItem(producto, cantidad, opciones = []) {
@@ -104,10 +132,11 @@ export class CarroService {
         };
     }
 
-    buildItemAdded(producto, cantidad) {
-        this.cart.items[this.getItemPositionById(producto.id)].qty += cantidad;
-        this.cart.items[this.getItemPositionById(producto.id)].subtotal += this.calcularTotalItem(producto, cantidad);
-        this.cart.items[this.getItemPositionById(producto.id)].total = Utiles._redondearValorDecimal(this.cart.items[this.getItemPositionById(producto.id)].total);
+    buildItemAdded(itemPosicion, producto, cantidad, opciones) {
+        // let itemPosicion = this.getItemPosition(producto.id, opciones);
+        this.cart.items[itemPosicion].qty += cantidad;
+        this.cart.items[itemPosicion].subtotal += this.calcularTotalItem(producto, cantidad);
+        this.cart.items[itemPosicion].total = Utiles._redondearValorDecimal(this.cart.items[itemPosicion].total);
     }
 
     calcularTotalItem(producto, cantidad = 1) {

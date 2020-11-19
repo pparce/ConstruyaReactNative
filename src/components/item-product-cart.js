@@ -10,9 +10,11 @@ import Utiles from '../utiles/funciones_utiles';
 
 function ItemProductCart(props) {
     var item = props.item;
+    console.log(item.options);
     var urlImagen = ApiService.IMAGE_BASE_URL + item.product.product_image_main;
     var [showShimmer, setShowShimmer] = useState(false);
     var navigation = useNavigation();
+
     return (
         <View>
             <TouchableRipple
@@ -54,6 +56,20 @@ function ItemProductCart(props) {
                                 numberOfLines={2}>
                                 {item.product.name}
                             </Text>
+
+                            {
+                                item.options && item.options.length > 0 &&
+                                <View style={{
+                                    borderColor: Theme.colors.grisClaro,
+                                    borderWidth: 1,
+                                    padding: 4,
+                                    borderRadius: 10
+                                }}>
+                                    {
+                                        _buildOptions(item)
+                                    }
+                                </View>
+                            }
                             <View style={[Theme.style.alingHorizontal]}>
                                 <Text
                                     style={{ fontSize: 14, marginRight: 16, color: Theme.colors.primary }}
@@ -82,6 +98,21 @@ function ItemProductCart(props) {
             </TouchableRipple>
         </View>
     );
+}
+
+const _buildOptions = (item) => {
+    let opciones = [];
+    item.options.forEach(element => {
+        let nombre = element.option.name;
+        let value = element.items_option[0].value;
+        opciones.push(
+            <View style={[Theme.style.alingHorizontal]} key={nombre}>
+                <Text style={[Theme.style.titleBold, { fontSize: 14 }]}>{nombre}: </Text>
+                <Text>{value}</Text>
+            </View>
+        );
+    });
+    return opciones;
 }
 
 export default ItemProductCart;

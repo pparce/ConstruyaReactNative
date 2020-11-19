@@ -17,8 +17,7 @@ export default class OpcionesProducto extends Component {
 
     _addView = () => {
         let views = [];
-        let opciones = this.props.producto ? this.props.producto.product_option_product : []
-        // console.log(opciones);
+        let opciones = this.props.producto ? this.props.producto.product_option_product : [];
         for (let i = 0; i < opciones.length; i++) {
             views.push(this._buildView(opciones[i]));
         }
